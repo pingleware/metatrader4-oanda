@@ -1,0 +1,32 @@
+{
+  "name": "@pingleware/metatrader4-oanda",
+  "version": "1.0.0-alpha",
+  "description": "Metatrader 4 to OANDA v2.0 REST API proxy",
+  "files": [
+    "*.js",
+    "package.json",
+    "README.md"
+  ],
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pingleware/metatrader4-oanda.git"
+  },
+  "keywords": [
+    "metatrader",
+    "oanda",
+    "pingleware"
+  ],
+  "author": "PressPage Entertainment Inc <presspage.entertainment@gmail.com>",
+  "license": "CC-BY-4.0",
+  "bugs": {
+    "url": "https://github.com/pingleware/metatrader4-oanda/issues"
+  },
+  "homepage": "https://github.com/pingleware/metatrader4-oanda#readme",
+  "dependencies": {
+    "@oanda/v20": "^3.0.25-0",
+    "request": "^2.88.2",
+    "ta-lib": "^0.11.0"
+  },
+  "private": false
+}
