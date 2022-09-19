@@ -49,9 +49,8 @@ const ENUM_ACCOUNT_STOPOUT_MODE = {
 };
 
 /**
- * 
-AccountInfoDouble
-Returns a value of double type of the corresponding account property
+ * AccountInfoDouble
+ * Returns a value of double type of the corresponding account property
 */ 
 function AccountInfoDouble(property_id, callback) {
     switch(property_id) {
@@ -77,10 +76,10 @@ function AccountInfoDouble(property_id, callback) {
             AccountMargin(callback);
             break;
         case ENUM_ACCOUNT_INFO_DOUBLE.ACCOUNT_MARGIN_SO_CALL:    
-            callback({status: 'error', message: 'not implemented'});
+            callback({status: 'error', message: 'not implemented', function: 'AccountInfoDouble'});
             break;
         case ENUM_ACCOUNT_INFO_DOUBLE.ACCOUNT_MARGIN_SO_SO:
-            callback({status: 'error', message: 'not implemented'});
+            callback({status: 'error', message: 'not implemented', function: 'AccountInfoDouble'});
             break;
         case ENUM_ACCOUNT_INFO_DOUBLE.ACCOUNT_MARGIN_INITIAL:
         case ENUM_ACCOUNT_INFO_DOUBLE.ACCOUNT_MARGIN_MAINTENANCE:
@@ -88,13 +87,13 @@ function AccountInfoDouble(property_id, callback) {
         case ENUM_ACCOUNT_INFO_DOUBLE.ACCOUNT_LIABILITIES:
         case ENUM_ACCOUNT_INFO_DOUBLE.ACCOUNT_COMMISSION_BLOCKED:
         default:
-            callback({status: 'error', message: 'not supported'});
+            callback({status: 'error', message: 'not supported', function: 'AccountInfoDouble'});
             break;            
     }
 }
 /**
-AccountInfoInteger
-Returns a value of integer type (bool, int or long) of the corresponding account property
+ * AccountInfoInteger
+ * Returns a value of integer type (bool, int or long) of the corresponding account property
 */ 
 function AccountInfoInteger(property_id, callback) {
     switch(property_id) {
@@ -104,34 +103,34 @@ function AccountInfoInteger(property_id, callback) {
         case ENUM_ACCOUNT_INFO_INTEGER.ACCOUNT_TRADE_MODE:
             var context = account.context;
             if (context.hostname.contains("practice")) {
-                callback({status: 'success', trade_mode: ENUM_ACCOUNT_TRADE_MODE.ACCOUNT_TRADE_MODE_DEMO});
+                callback({status: 'success', trade_mode: ENUM_ACCOUNT_TRADE_MODE.ACCOUNT_TRADE_MODE_DEMO, function: 'AccountInfoInteger'});
             } else {
-                callback({status: 'success', trade_mode: ENUM_ACCOUNT_TRADE_MODE.ACCOUNT_TRADE_MODE_REAL});
+                callback({status: 'success', trade_mode: ENUM_ACCOUNT_TRADE_MODE.ACCOUNT_TRADE_MODE_REAL, function: 'AccountInfoInteger'});
             }
             break;
         case ENUM_ACCOUNT_INFO_INTEGER.ACCOUNT_LEVERAGE:
             AccountLeverage(callback);
             break;
         case ENUM_ACCOUNT_INFO_INTEGER.ACCOUNT_LIMIT_ORDERS:
-            callback({status: 'error', message: 'not implemented'});
+            callback({status: 'error', message: 'not implemented', function: 'AccountInfoInteger'});
             break;
         case ENUM_ACCOUNT_INFO_INTEGER.ACCOUNT_MARGIN_SO_MODE:
-            callback({status: 'error', message: 'not implemented'});
+            callback({status: 'error', message: 'not implemented', function: 'AccountInfoInteger'});
             break;
         case ENUM_ACCOUNT_INFO_INTEGER.ACCOUNT_TRADE_ALLOWED:
-            callback({status: 'error', message: 'not implemented'});
+            callback({status: 'error', message: 'not implemented', function: 'AccountInfoInteger'});
             break;
         case ENUM_ACCOUNT_INFO_INTEGER.ACCOUNT_TRADE_EXPERT:
-            callback({status: 'error', message: 'not implemented'});
+            callback({status: 'error', message: 'not implemented', function: 'AccountInfoInteger'});
             break;
         default:        
-            callback({status: 'error', message: 'not supported'});
+            callback({status: 'error', message: 'not supported', function: 'AccountInfoInteger'});
             break;
     }
 }
 /**
-AccountInfoString
-Returns a value string type corresponding account property
+ * AccountInfoString
+ * Returns a value string type corresponding account property
 */ 
 function AccountInfoString(property_id, callback) {
     switch(property_id) {
@@ -148,154 +147,154 @@ function AccountInfoString(property_id, callback) {
             AccountCompany(callback);
             break;
         default:
-            callback({status: 'error', message: 'not supported'});
+            callback({status: 'error', message: 'not supported', function: 'AccountInfoString'});
             break;
     }
 }
 /**
-AccountBalance
-Returns balance value of the current account
+ * AccountBalance
+ * Returns balance value of the current account
 */ 
 function AccountBalance(callback) {
     var context = account.context;
     SendRequest(context,`v3/accounts/${account.number}/`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
-            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`});
+            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`, function: 'AccountBalance'});
         } else {
-            callback({status: 'success', equity: Number(data.account.balance)});
+            callback({status: 'success', equity: Number(data.account.balance), function: 'AccountBalance'});
         }
     });
 }
 /**
-AccountCredit
-Returns credit value of the current account
+ * AccountCredit
+ * Returns credit value of the current account
 */ 
 function AccountCredit(callback) {
-    callback({status: 'success', credit: Number(0)});
+    callback({status: 'success', credit: Number(0), function: 'AccountCredit'});
 }
 /**
-AccountCompany
-Returns the brokerage company name where the current account was registered
+ * AccountCompany
+ * Returns the brokerage company name where the current account was registered
 */ 
 function AccountCompany(callback) {
-    callback({status: 'success', company: 'OANDA DIVISION1'});
+    callback({status: 'success', company: 'OANDA DIVISION1', function: 'AccountCompany'});
 }
 /**
-AccountCurrency
-Returns currency name of the current account
+ * AccountCurrency
+ * Returns currency name of the current account
 */ 
 function AccountCurrency(callback) {
     var context = account.context;
     SendRequest(context,`v3/accounts/${account.number}/`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
-            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`});
+            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`, function: 'AccountCurrency'});
         } else {
-            callback({status: 'success', currency: data.account.currency});
+            callback({status: 'success', currency: data.account.currency, function: 'AccountCurrency'});
         }
     });
 }
 /**
-AccountEquity
-Returns equity value of the current account
+ * AccountEquity
+ * Returns equity value of the current account
 */ 
 function AccountEquity(callback) {
     var context = account.context;
     SendRequest(context,`v3/accounts/${account.number}/`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
-            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`});
+            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`, function: 'AccountEquity'});
         } else {
-            callback({status: 'success', equity: Number(data.account.NAV)});
+            callback({status: 'success', equity: Number(data.account.NAV), function: 'AccountEquity'});
         }
     });
 }
 /**
-AccountFreeMargin
-Returns free margin value of the current account
+ * AccountFreeMargin
+ * Returns free margin value of the current account
 */ 
 function AccountFreeMargin(callback) {
     var context = account.context;
     SendRequest(context,`v3/accounts/${account.number}/`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
-            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`});
+            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`, function: 'AccountFreeMargin'});
         } else {
-            callback({status: 'success', freeMargin: Number(data.account.marginAvailable)});
+            callback({status: 'success', freeMargin: Number(data.account.marginAvailable), function: 'AccountFreeMargin'});
         }
     });
 }
 /**
-AccountFreeMarginCheck
-Returns free margin that remains after the specified position has been opened at the current price on the current account
+ * AccountFreeMarginCheck
+ * Returns free margin that remains after the specified position has been opened at the current price on the current account
 */ 
 function AccountFreeMarginCheck(symbol,trade_op,trade_pride,callback) {
-    callback({status: 'error', message: 'not implemented'});
+    callback({status: 'error', message: 'not implemented', function: 'AccountFreeMarginCheck'});
 }
 /**
-AccountFreeMarginMode
-Calculation mode of free margin allowed to open orders on the current account
-
-Returned value
---------------
-Calculation mode of free margin allowed to opened orders on the current account. 
-
-The calculation mode can take the following values:
-0 - floating profit/loss is not used for calculation;
-1 - both floating profit and loss on opened orders on the current account are used for free margin calculation;
-2 - only profit value is used for calculation, the current loss on opened orders is not considered;
-3 - only loss value is used for calculation, the current floating profit on opened orders is not considered.
+ * AccountFreeMarginMode
+ * Calculation mode of free margin allowed to open orders on the current account
+ * 
+ * Returned value
+ * --------------
+ * Calculation mode of free margin allowed to opened orders on the current account. 
+ * 
+ * The calculation mode can take the following values:
+ * 0 - floating profit/loss is not used for calculation;
+ * 1 - both floating profit and loss on opened orders on the current account are used for free margin calculation;
+ * 2 - only profit value is used for calculation, the current loss on opened orders is not considered;
+ * 3 - only loss value is used for calculation, the current floating profit on opened orders is not considered.
 */ 
 function AccountFreeMarginMode(callback) {
-    callback({status: 'success', freeMarginMode: Number(1)});
+    callback({status: 'success', freeMarginMode: Number(1), function: 'AccountFreeMarginMode'});
 }
 /**
-AccountLeverage
-Returns leverage of the current account
-
-Returns: Effective Leverage Ratio = Total trading position size/ Total Equity.
-@see https://www.optioninvest.net/what-is-leverage-in-forex/
+ * AccountLeverage
+ * Returns leverage of the current account
+ * 
+ * Returns: Effective Leverage Ratio = Total trading position size/ Total Equity.
+ * @see https://www.optioninvest.net/what-is-leverage-in-forex/
 */ 
 function AccountLeverage(callback) {
     var context = account.context;
     SendRequest(context,`v3/accounts/${account.number}/`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
-            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`});
+            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`, function: 'AccountLeverage'});
         } else {
             let leverage = Number(data.account.positionValue / data.account.NAV).toFixed(0);
-            callback({status: 'success', leverage: leverage});
+            callback({status: 'success', leverage: leverage, function: 'AccountLeverage'});
         }
     });
 }
 /**
-AccountMargin
-Returns margin value of the current account
+ * AccountMargin
+ * Returns margin value of the current account
 */ 
 function AccountMargin(callback) {
     var context = account.context;
     SendRequest(context,`v3/accounts/${account.number}/`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
-            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`});
+            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`, function: 'AccountMargin'});
         } else {
-            callback({status: 'success', margin: Number(data.account.marginRate)});
+            callback({status: 'success', margin: Number(data.account.marginRate), function: 'AccountMargin'});
         }
     });
 }
 /**
-AccountName
-Returns the current account name
+ * AccountName
+ * Returns the current account name
 */ 
 function AccountName(callback) {
     var context = account.context;
     SendRequest(context,`v3/accounts/${account.number}/`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
-            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`});
+            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`, function: 'AccountName'});
         } else {
-            callback({status: 'success', name: data.account.alias});
+            callback({status: 'success', name: data.account.alias, function: 'AccountName'});
         }
     });
 }
@@ -312,10 +311,10 @@ function AccountNumber(callback) {
             if (_account.id == account.number) {
                 if (_account.mt4AccountID != undefined) {
                     //console.log(_account.mt4AccountID);
-                    callback({status: 'success', number: _account.mt4AccountID});
+                    callback({status: 'success', number: _account.mt4AccountID, function: 'AccountNumber'});
                     //return (_account.mt4AccountID);
                 } else {
-                    callabck({status: 'error', message: "not found"});
+                    callabck({status: 'error', message: "not found", function: 'AccountNumber'});
                 }
             }
         });    
@@ -323,58 +322,58 @@ function AccountNumber(callback) {
 }
 
 /**
-AccountProfit
-Returns profit value of the current account
+ * AccountProfit
+ * Returns profit value of the current account
 */ 
 function AccountProfit(callback) {
     var context = account.context;
     SendRequest(context,`v3/accounts/${account.number}/`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
-            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`});
+            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`, function: 'AccountProfit('});
         } else {
-            callback({status: 'success', profit: Number(data.account.pl)});
+            callback({status: 'success', profit: Number(data.account.pl), function: 'AccountProfit('});
         }
     });
 }
 /**
-AccountServer
-Returns the connected server name
+ * AccountServer
+ * Returns the connected server name
 */ 
 function AccountServer(callback) {
     var context = account.context;
-    callback({status: 'success', server: context.hostname});
+    callback({status: 'success', server: context.hostname, function: 'AccountServer'});
 }
 /**
-AccountStopoutLevel
-Returns the value of the Stop Out level
+ * AccountStopoutLevel
+ * Returns the value of the Stop Out level
 */ 
 function AccountStopoutLevel(callback) {
     var context = account.context;
     SendRequest(context,`v3/accounts/${account.number}/`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
-            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`});
+            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/`, function: 'AccountStopoutLevel'});
         } else {
             let stopoutLevel = Number(data.account.marginCloseoutPercent * 100).toFixed(0);
-            callback({status: 'success', stopoutLevel: stopoutLevel});
+            callback({status: 'success', stopoutLevel: stopoutLevel, function: 'AccountStopoutLevel'});
         }
     });
 }
 /**
-AccountStopoutMode
-Returns the calculation mode for the Stop Out level
-
-Returned value
---------------
-Returns the calculation mode for the Stop Out level. 
-
-Calculation mode can take the following values:
-0 - calculation of percentage ratio between margin and equity;
-1 - comparison of the free margin level to the absolute value.
+ * AccountStopoutMode
+ * Returns the calculation mode for the Stop Out level
+ * 
+ * Returned value
+ * --------------
+ * Returns the calculation mode for the Stop Out level. 
+ * 
+ * Calculation mode can take the following values:
+ * 0 - calculation of percentage ratio between margin and equity;
+ * 1 - comparison of the free margin level to the absolute value.
  */
 function AccountStopoutMode(callback) {
-    callback({status: 'success', stopoutMode: Number(0)});
+    callback({status: 'success', stopoutMode: Number(0), function: 'AccountStopoutMode'});
 }
 
 module.exports = {
