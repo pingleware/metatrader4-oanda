@@ -14,6 +14,12 @@ const ENUM_CRYPT_METHOD = {
     CRYPT_ARCH_ZIP:     7   // ZIP archives
 };
 
+const ENUM_POINTER_TYPE = {
+    POINTER_INVALID:    0,  // Incorrect pointer
+    POINTER_DYNAMIC:    1,  // Pointer of the object created by the new() operator
+    POINTER_AUTOMATIC:  2   // Pointer of any objects created automatically (not using new())
+}
+
 /**
  * Alert
  * Displays a message in a separate window
@@ -25,8 +31,12 @@ function Alert(callback){
  * CheckPointer
  * Returns the type of the object pointer
 */ 
-function CheckPointer(callback){
-
+function CheckPointer(any_pointer){
+    if (any_pointer) {
+        return ENUM_POINTER_TYPE.POINTER_DYNAMIC;
+    } else {
+        return ENUM_POINTER_TYPE.POINTER_INVALID;
+    }
 }
 /**
  * Comment
@@ -368,6 +378,8 @@ function ZeroMemory(variable){
 }
 
 module.exports = {
+    ENUM_CRYPT_METHOD,
+    ENUM_POINTER_TYPE,
     Alert,
     CheckPointer,
     Comment,
