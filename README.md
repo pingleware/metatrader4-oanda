@@ -1,7 +1,10 @@
 # PINGLEWARE Metatrader API Proxy for OANDA v2.0 REST API
-API algorithmin trading is independent of the operating system and trading platform. The OANDA REST API has functionality not available to metatrader expert advisors like a Market-If-Touch order which is an extensive pending order.
+API algorithmin trading is independent of the operating system and trading platform. The OANDA REST API has functionality not available to metatrader expert advisors like a Market-If-Touch order which is an extensive pending order, and API trading permits the inclusion of trailing stop.
 
 This module provides provides matching functionality of the metatrader functions to the OANDA REST API.
+
+# Using MQL5.COM private signals
+If your trading account is associated with MetaTrader, then you can create a private signal to monitor and obtain live statistics and performance metrics of your API algorithmic trading, but keep in mond that API trading is marked as 'Placed manually' whereas a metatrader EA is marked as 'Placed by expert'. If only API trades are placed on the account, the Algo Trading metric will show 0% because metatrader is reporting those trades as manual trades. Best to keep the signal private with the above notation reminder in the description.
 
 # Installation
 
@@ -24,10 +27,41 @@ This module provides provides matching functionality of the metatrader functions
         console.log(accountNumber);
     });
 
+OrderSend has a trailing stop parameter and removes the arrow color parameter. With API trading, you can include a trailing stop loss order when the order is first created. Prior to API trading and within the MQL programming, you were required to write a trailing stop algorithm in an expert advisor or watch the Metatrader terminal and add the trailing stop the each trade manually.
+
+    OrderSend(symbol,cmd,volume,price,slippage,stoploss,takeprofit,trailingstop,comment=null,magic=0,expiration=0,callback);
+
+where,
+
+    symbol refers to the currency pair,
+    cmd refers to the trade operation, OP_BUY, OP_SELL, etc.
+    volume refers to the lot size in decimal format and wil automatically divide by 100,000 for a standard lot
+    price refers to the trade price
+    slippage refers to the maximum price you will accept
+    stoploss refers to the stop loss target
+    takeprofit refers to the take profit target
+    trailingstop refers to the distance for the trailing stop loss, a zero indicates no trailing stop loss
+    comment refers to a user-defined comment
+    magic sets the tag value in the clientExtensions
+    expiration sets an expiry time for LIMIT and STOP orders
+    callback is the callback function to return the trade information
+
+## iCustom function
+The iCustom function is provided to invoke standalone executable indicator files, which take the command line arguments,
+
+    program_name symbol timeframe [optional indicator arguments]
+
+the indicator code should output the results to the console for the return to capture the console and send back to the caller.
+
 # Supported Metatrader Functions
 The following functions are supported and use callbacks for asynchronous communication,
 
+## Initialization Functions
+
     initialize,
+    configureFTP,
+    configureTwilio,
+    configSendGrid,
 
 ## Marketinfo
 
@@ -131,16 +165,34 @@ The following functions are supported and use callbacks for asynchronous communi
 
 ## Time Series Functions
 
+    ENUM_TIMEFRAMES,
+    ENUM_SERIES_INFO_INTEGER,
+    ENUM_SERIESMODE,
     SeriesInfoInteger,
     RefreshRates,
-    CopyRates,
-    CopyTime,
-    CopyOpen,
-    CopyHigh,
-    CopyLow,
-    CopyClose,
-    CopyTickVolume,
+    CopyRatesFromStart,
+    CopyRatesFromDate,
+    CopyRatesBetween,
+    CopyTimeFromStart,
+    CopyTimeFromDate,
+    CopyTimeBetween,
+    CopyOpenFromStart,
+    CopyOpenFromDate,
+    CopyOpenBetween,
+    CopyHighFromStart,
+    CopyHighFromDate,
+    CopyHighBetween,
+    CopyLowFromStart,
+    CopyLowFromDate,
+    CopyLowBetween,
+    CopyCloseFromStart,
+    CopyCloseFromDate,
+    CopyCloseBetween,
+    CopyTickVolumeFromStart,
+    CopyTickVolumeFromDate,
+    CopyTickVolumeBetween,
     Bars,
+    BarsBetween,
     iBars,
     iBarShift,
     iClose,
@@ -283,7 +335,15 @@ The following functions are supported and use callbacks for asynchronous communi
 # Release Schedule
 
         Date        Version
-    ??/??/2022       1.0.0          Initial release
+    ??/??/2022       1.0.0          Production release
+
+## Release Tags
+
+    alpha = preview not suitable for production, not all functionality is implemented, some functionality may change without notice; testing and evaluation purposes only
+    beta  = functionality implementation has been finalized, some testing performed, not thoroughly tested, only major breaks will change functionality implementation
+    gamma = functionality implemnetation has been locked down, extensive testing is under way.
+
+    production = (without any version suffix), ready for live trading
 
 # End-of-Life Doctrine
 When a piece of software is useful, there should never be an EOL doctrine. The intention for this application is to achieve immoratlity ;).
