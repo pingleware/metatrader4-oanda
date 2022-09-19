@@ -76,22 +76,22 @@ function SeriesInfoInteger(symbol,timeframe,property_id,callback){
     } else if (current_rates.length > 0) {
         switch(property_id) {
             case ENUM_SERIES_INFO_INTEGER.SERIES_BARS_COUNT:
-                callback({status: 'success', total: current_rates.length});
+                callback({status: 'success', total: current_rates.length, function: 'SeriesInfoInteger'});
                 break;
             case ENUM_SERIES_INFO_INTEGER.SERIES_FIRSTDATE:
-                callback({status: 'success', firstdate: current_rates[0].time});
+                callback({status: 'success', firstdate: current_rates[0].time, function: 'SeriesInfoInteger'});
                 break;
             case ENUM_SERIES_INFO_INTEGER.SERIES_LASTBAR_DATE:
-                callback({status: 'success', lastbar_date: current_rates[current_rates.length - 1].time});
+                callback({status: 'success', lastbar_date: current_rates[current_rates.length - 1].time, function: 'SeriesInfoInteger'});
                 break;
             case ENUM_SERIES_INFO_INTEGER.SERIES_SERVER_FIRSTDATE:
-                callback({status: 'success', firstdate: current_rates[0].time});
+                callback({status: 'success', firstdate: current_rates[0].time, function: 'SeriesInfoInteger'});
                 break;
             default:
-                callback({status: 'error', message: 'mismatch input'});
+                callback({status: 'error', message: 'mismatch input', function: 'SeriesInfoInteger'});
         }
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'SeriesInfoInteger'});
     }
 }
 /**
@@ -164,7 +164,7 @@ function RefreshRates(callback){
         SendRequest(context,`v3/accounts/${account.number}/candles/latest?instrument=${current_symbol}&granularity=${granularity}`,'GET',null,function(json){
             var data = JSON.parse(json);
             if (data.errorMessage) {
-                callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/candles/latest?instrument=${current_symbol}&granularity=${granularity}`});
+                callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/candles/latest?instrument=${current_symbol}&granularity=${granularity}`, function: 'RefreshRates'});
             } else {
                 if (data.candles) {
                     current_rates = {};
@@ -183,7 +183,7 @@ function RefreshRates(callback){
                     });
                     callback({status: 'success', rates: current_rates, function: 'RefreshRates'});
                 } else {
-                    callback({status: 'error', message: 'no candles'});
+                    callback({status: 'error', message: 'no candles', function: 'RefreshRates'});
                 }
             }
         });
@@ -215,9 +215,9 @@ function CopyRatesFromStart(symbol,timeframe,pos,count,callback){
                 rates.push(current_rate);
             }
         });
-        callback({status: 'success', rates: rates});    
+        callback({status: 'success', rates: rates, function: 'CopyRatesFromStart'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyRatesFromStart'});
     }
 }
 function CopyRatesFromDate(symbol,timeframe,start_time,count,callback){
@@ -240,9 +240,9 @@ function CopyRatesFromDate(symbol,timeframe,start_time,count,callback){
                 rates.push(current_rate);
             }
         });
-        callback({status: 'success', rates: rates});    
+        callback({status: 'success', rates: rates, function: 'CopyRatesFromDate'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyRatesFromDate'});
     }
 }
 function CopyRatesBetween(symbol,timeframe,start_time,end_time,callback){
@@ -265,9 +265,9 @@ function CopyRatesBetween(symbol,timeframe,start_time,end_time,callback){
                 rates.push(current_rate);
             }
         });
-        callback({status: 'success', rates: rates});    
+        callback({status: 'success', rates: rates, function: 'CopyRatesBetween'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyRatesBetween'});
     }
 }
 /**
@@ -294,9 +294,9 @@ function CopyTimeFromStart(symbol,timeframe,pos,count,callback){
                 time_array.push(current_rate.time);
             }
         });
-        callback({status: 'success', time: time_array});    
+        callback({status: 'success', time: time_array, function: 'CopyTimeFromStart'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyTimeFromStart'});
     }
 }
 function CopyTimeFromDate(symbol,timeframe,start_time,count,callback){
@@ -319,9 +319,9 @@ function CopyTimeFromDate(symbol,timeframe,start_time,count,callback){
                 time_array.push(current_rate.time);
             }
         });
-        callback({status: 'success', time: time_array});    
+        callback({status: 'success', time: time_array, function: 'CopyTimeFromDate'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyTimeFromDate'});
     }
 }
 function CopyTimeBetween(symbol,timeframe,start_time,end_time,callback){
@@ -344,9 +344,9 @@ function CopyTimeBetween(symbol,timeframe,start_time,end_time,callback){
                 time_array.push(current_rate.time);
             }
         });
-        callback({status: 'success', time: time_array});    
+        callback({status: 'success', time: time_array, function: 'CopyTimeBetween'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyTimeBetween'});
     }
 }
 /**
@@ -373,9 +373,9 @@ function CopyOpenFromStart(symbol,timeframe,pos,count,callback){
                 open_array.push(current_rate.open);
             }
         });
-        callback({status: 'success', open: open_array});    
+        callback({status: 'success', open: open_array, function: 'CopyOpenFromStart'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyOpenFromStart'});
     }
 }
 function CopyOpenFromDate(symbol,timeframe,start_time,count,callback){
@@ -398,9 +398,9 @@ function CopyOpenFromDate(symbol,timeframe,start_time,count,callback){
                 open_array.push(current_rate.open);
             }
         });
-        callback({status: 'success', open: open_array});    
+        callback({status: 'success', open: open_array, function: 'CopyOpenFromDate'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyOpenFromDate'});
     }
 }
 function CopyOpenBetween(symbol,timeframe,start_time,end_timecallback){
@@ -423,9 +423,9 @@ function CopyOpenBetween(symbol,timeframe,start_time,end_timecallback){
                 open_array.push(current_rate.open);
             }
         });
-        callback({status: 'success', open: open_array});    
+        callback({status: 'success', open: open_array, function: 'CopyOpenBetween'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyOpenBetween'});
     }
 }
 /**
@@ -452,9 +452,9 @@ function CopyHighFromStart(symbol,timeframe,pos,count,callback){
                 high_array.push(current_rate.high);
             }
         });
-        callback({status: 'success', high: high_array});    
+        callback({status: 'success', high: high_array, function: 'CopyHighFromStart'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyHighFromStart'});
     }
 }
 function CopyHighFromDate(symbol,timeframe,start_time,count,callback){
@@ -477,9 +477,9 @@ function CopyHighFromDate(symbol,timeframe,start_time,count,callback){
                 high_array.push(current_rate.high);
             }
         });
-        callback({status: 'success', high: high_array});    
+        callback({status: 'success', high: high_array, function: 'CopyHighFromDate'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyHighFromDate'});
     }
 }
 function CopyHighBetween(symbol,timeframe,start_time,end_time,callback){
@@ -502,9 +502,9 @@ function CopyHighBetween(symbol,timeframe,start_time,end_time,callback){
                 high_array.push(current_rate.high);
             }
         });
-        callback({status: 'success', high: high_array});    
+        callback({status: 'success', high: high_array, function: 'CopyHighBetween'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyHighBetween'});
     }
 }
 /**
@@ -531,9 +531,9 @@ function CopyLowFromStart(symbol,timeframe,pos,count,callback){
                 low_array.push(current_rate.low);
             }
         });
-        callback({status: 'success', low: low_array});    
+        callback({status: 'success', low: low_array, function: 'CopyLowFromStart'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyLowFromStart'});
     }
 }
 function CopyLowFromDate(symbol,timeframe,start_time,count,callback){
@@ -556,9 +556,9 @@ function CopyLowFromDate(symbol,timeframe,start_time,count,callback){
                 low_array.push(current_rate.low);
             }
         });
-        callback({status: 'success', low: low_array});    
+        callback({status: 'success', low: low_array, function: 'CopyLowFromDate'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyLowFromDate'});
     }
 }
 function CopyLowBetween(symbol,timeframe,start_time,end_time,callback){
@@ -581,9 +581,9 @@ function CopyLowBetween(symbol,timeframe,start_time,end_time,callback){
                 low_array.push(current_rate.low);
             }
         });
-        callback({status: 'success', low: low_array});    
+        callback({status: 'success', low: low_array, function: 'CopyLowBetween'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyLowBetween'});
     }
 }
 /**
@@ -610,9 +610,9 @@ function CopyCloseFromStart(symbol,timeframe,pos,count,callback){
                 close_array.push(current_rate.close);
             }
         });
-        callback({status: 'success', close: close_array});    
+        callback({status: 'success', close: close_array, function: 'CopyCloseFromStart'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyCloseFromStart'});
     }
 }
 function CopyCloseFromDate(symbol,timeframe,start_time,count,callback){
@@ -635,9 +635,9 @@ function CopyCloseFromDate(symbol,timeframe,start_time,count,callback){
                 close_array.push(current_rate.close);
             }
         });
-        callback({status: 'success', close: close_array});    
+        callback({status: 'success', close: close_array, function: 'CopyCloseFromDate'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyCloseFromDate'});
     }
 }
 function CopyCloseBetween(symbol,timeframe,start_time,end_time,callback){
@@ -660,9 +660,9 @@ function CopyCloseBetween(symbol,timeframe,start_time,end_time,callback){
                 close_array.push(current_rate.close);
             }
         });
-        callback({status: 'success', close: close_array});    
+        callback({status: 'success', close: close_array, function: 'CopyCloseBetween('});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyCloseBetween('});
     }
 }
 /**
@@ -689,9 +689,9 @@ function CopyTickVolumeFromStart(symbol,timeframe,pos,count,callback){
                 tick_volume_array.push(current_rate.tick_volume);
             }
         });
-        callback({status: 'success', tick_volume: tick_volume_array});    
+        callback({status: 'success', tick_volume: tick_volume_array, function: 'CopyTickVolumeFromStart'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyTickVolumeFromStart'});
     }
 }
 function CopyTickVolumeFromDate(csymbol,timeframe,start_time,count,callback){
@@ -714,9 +714,9 @@ function CopyTickVolumeFromDate(csymbol,timeframe,start_time,count,callback){
                 tick_volume_array.push(current_rate.tick_volume);
             }
         });
-        callback({status: 'success', tick_volume: tick_volume_array});    
+        callback({status: 'success', tick_volume: tick_volume_array, function: 'CopyTickVolumeFromDate'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyTickVolumeFromDate'});
     }
 }
 function CopyTickVolumeBetween(symbol,timeframe,start_time,end_time,callback){
@@ -739,9 +739,9 @@ function CopyTickVolumeBetween(symbol,timeframe,start_time,end_time,callback){
                 tick_volume_array.push(current_rate.tick_volume);
             }
         });
-        callback({status: 'success', tick_volume: tick_volume_array});    
+        callback({status: 'success', tick_volume: tick_volume_array, function: 'CopyTickVolumeBetween'});    
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'CopyTickVolumeBetween'});
     }
 }
 /**
@@ -762,9 +762,9 @@ function Bars(symbol,timeframe,callback){
             }
         );
     } else if (current_rates.length > 0) {
-        callback({status: 'success', bars: current_rates.length});
+        callback({status: 'success', bars: current_rates.length, function: 'Bars'});
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'Bars'});
     }
 }
 function BarsBetween(symbol,timeframe,start_time,end_time,callback){
@@ -787,9 +787,9 @@ function BarsBetween(symbol,timeframe,start_time,end_time,callback){
                 rates.push(current_rate);
             }
         });
-        callback({status: 'success', bars: rates.length});
+        callback({status: 'success', bars: rates.length, function: 'BarsBetween'});
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'BarsBetween'});
     }
 }
 /**
@@ -810,9 +810,9 @@ function iBars(symbol,timeframe,callback){
             }
         );
     } else if (current_rates.length > 0) {
-        callback({status: 'success', bars: current_rates.length});
+        callback({status: 'success', bars: current_rates.length, function: 'iBars'});
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'iBars'});
     }
 }
 /**
@@ -850,9 +850,9 @@ function iBarShift(symbol,timeframe,search_time,exact,callback){
                 }
             }
         });
-        callback({status: 'success', bar: found});
+        callback({status: 'success', bar: found, function: 'iBarShift'});
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'iBarShift'});
     }
 }
 /**
@@ -874,9 +874,9 @@ function iClose(symbol,timeframe,shift,callback){
         );
     } else if (current_rates.length > 0) {
         var close = current_rates[shift].close;
-        callback({status: 'success', close: close});
+        callback({status: 'success', close: close, function: 'iClose'});
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'iClose'});
     }
 }
 /**
@@ -898,9 +898,9 @@ function iHigh(symbol,timeframe,shift,callback){
         );
     } else if (current_rates.length > 0) {
         var high = current_rates[shift].high;
-        callback({status: 'success', high: high});
+        callback({status: 'success', high: high, function: 'iHigh'});
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'iHigh'});
     }
 }
 /**
@@ -947,9 +947,9 @@ function iHighest(symbol,timeframe,seriesmode_type,count,start_pos,callback){
             }
         });
         var highest = Math.max(rates);
-        callback({status: 'success', highest: highest});
+        callback({status: 'success', highest: highest, function: 'iHighest'});
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'iHighest'});
     }
 }
 /**
@@ -971,9 +971,9 @@ function iLow(symbol,timeframe,shift,callback){
         );
     } else if (current_rates.length > 0) {
         var low = current_rates[shift].low;
-        callback({status: 'success', low: low});
+        callback({status: 'success', low: low, function: 'iLow'});
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'iLow'});
     }
 }
 /**
@@ -1020,9 +1020,9 @@ function iLowest(symbol,timeframe,seriesmode_type,count,start_pos,callback){
             }
         });
         var lowest = Math.min(rates);
-        callback({status: 'success', lowest: lowest});
+        callback({status: 'success', lowest: lowest, function: 'iLowest'});
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'iLowest'});
     }
 }
 /**
@@ -1044,9 +1044,9 @@ function iOpen(symbol,timeframe,shift,callback){
         );
     } else if (current_rates.length > 0) {
         var open = current_rates[shift].open;
-        callback({status: 'success', open: open});
+        callback({status: 'success', open: open, function: 'iOpen'});
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'iOpen'});
     }
 }
 /**
@@ -1068,9 +1068,9 @@ function iTime(symbol,timeframe,shift,callback){
         );
     } else if (current_rates.length > 0) {
         var time = current_rates[shift].time;
-        callback({status: 'success', time: time});
+        callback({status: 'success', time: time, function: 'iTime'});
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'iTime'});
     }
 }
 /**
@@ -1092,9 +1092,9 @@ function iVolume(symbol,timeframe,shift,callback){
         );
     } else if (current_rates.length > 0) {
         var volume = current_rates[shift].volume;
-        callback({status: 'success', volume: volume});
+        callback({status: 'success', volume: volume, function: 'iVolume'});
     } else {
-        callback({status: 'error', message: 'missing rates'});
+        callback({status: 'error', message: 'missing rates', function: 'iVolume'});
     }
 }
 
