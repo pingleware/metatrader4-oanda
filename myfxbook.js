@@ -1,13 +1,15 @@
 "use strict"
 
 const request = require('request');
+const env = process.env;
+const language = env.LANG || env.LANGUAGE || env.LC_ALL || env.LC_MESSAGES;
 
 function Login(email, password, callback) {
     var options = {
         'method': 'GET',
         'url': `https://www.myfxbook.com/api/login.json?email=${email}&password=${password}`,
         'headers': {
-          'Cookie': 'locale=en'
+          'Cookie': `locale=${language}`
         }
     };
     request(options, function (error, response) {
@@ -28,7 +30,7 @@ function Logout(session, callback) {
         'method': 'GET',
         'url': `https://www.myfxbook.com/api/logout.json?session=${session}`,
         'headers': {
-          'Cookie': 'locale=en'
+          'Cookie': `locale=${language}`
         }
       };
       request(options, function (error, response) {
@@ -50,7 +52,7 @@ function GetMyAccounts(session, callback) {
         'method': 'GET',
         'url': `https://www.myfxbook.com/api/get-my-accounts.json?session=${session}`,
         'headers': {
-          'Cookie': 'locale=en'
+          'Cookie': `locale=${language}`
         }
     };
     request(options, function (error, response) {
@@ -71,7 +73,7 @@ function GetWatchedAccounts(session, callback) {
         'method': 'GET',
         'url': `https://www.myfxbook.com/api/get-watched-accounts.json?session=${session}`,
         'headers': {
-          'Cookie': 'locale=en'
+          'Cookie': `locale=${language}`
         }
     };
     request(options, function (error, response) {
@@ -92,7 +94,7 @@ function GetOpenOrders(session, id, callback) {
         'method': 'GET',
         'url': `https://www.myfxbook.com/api/get-open-orders.json?session=${session}&id=${id}`,
         'headers': {
-          'Cookie': 'locale=en'
+          'Cookie': `locale=${language}`
         }
     };
     request(options, function (error, response) {
@@ -113,7 +115,7 @@ function GetOpenTrades(session, id, callback) {
         'method': 'GET',
         'url': `https://www.myfxbook.com/api/get-open-trades.json?session=${session}&id=${id}`,
         'headers': {
-          'Cookie': 'locale=en'
+          'Cookie': `locale=${language}`
         }
     };
     request(options, function (error, response) {
@@ -134,7 +136,7 @@ function GetHistory(session, id, callback) {
         'method': 'GET',
         'url': `https://www.myfxbook.com/api/get-history.json?session=${session}&id=${id}`,
         'headers': {
-          'Cookie': 'locale=en'
+          'Cookie': `locale=${language}`
         }
     };
     request(options, function (error, response) {
@@ -155,7 +157,7 @@ function GetDailyGain(session, id, start_date, end_date, callback) {
         'method': 'GET',
         'url': `https://www.myfxbook.com/api/get-daily-gain.json?session=${session}&id=${id}&start=${start_date}&end=${end_date}`,
         'headers': {
-          'Cookie': 'locale=en'
+          'Cookie': `locale=${language}`
         }
     };
     request(options, function (error, response) {
@@ -176,7 +178,7 @@ function GetGain(session, id, start_date, end_date, callback) {
         'method': 'GET',
         'url': `https://www.myfxbook.com/api/get-gain.json?session=${session}&id=${id}&start=${start_date}&end=${end_date}`,
         'headers': {
-          'Cookie': 'locale=en'
+          'Cookie': `locale=${language}`
         }
     };
     request(options, function (error, response) {
@@ -197,7 +199,7 @@ function GetCustomWidget(session, id, width=300, height=200, bart=1, linet=0, bg
         'method': 'GET',
         'url': `https://widgets.myfxbook.com/api/get-custom-widget.png?session=${session}&id=${id}&width=${width}&height=${height}&bart=${bart}&linet=${linet}&bgColor=${bgColor}&gridColor=${gridColor}&lineColor=${lineColor}&barColor=${barColor}&fontColor=${fontColor}&title=${title}&titles=${titles}&chartbgc=${chartbgc}`,
         'headers': {
-          'Cookie': 'locale=en'
+          'Cookie': `locale=${language}`
         }
     };
     request(options, function (error, response) {
@@ -213,7 +215,7 @@ function GetCommunitySentiment(session, callback) {
         'method': 'GET',
         'url': `https://www.myfxbook.com/api/get-community-outlook.json?session=${session}`,
         'headers': {
-          'Cookie': 'locale=en'
+          'Cookie': `locale=${language}`
         }
     };
     request(options, function (error, response) {
@@ -234,7 +236,7 @@ function GetCommunitySentimentByCountry(session, symbol, callback) {
         'method': 'GET',
         'url': `https://www.myfxbook.com/api/get-community-outlook-by-country.json?session=${session}&symbol=${symbol.toLowerCase()}`,
         'headers': {
-          'Cookie': 'locale=en'
+          'Cookie': `locale=${language}`
         }
       };
     request(options, function (error, response) {
@@ -255,7 +257,7 @@ function GetDataDaily(session, id, start_date, end_date, callback) {
         'method': 'GET',
         'url': `https://www.myfxbook.com/api/get-data-daily.json?session=${session}&id=${id}&start=${start_date}&end=${end_date}`,
         'headers': {
-          'Cookie': 'locale=en'
+          'Cookie': `locale=${language}`
         }
       };
 
