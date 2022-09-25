@@ -49,6 +49,8 @@ const {
 
 const {
     TRADE_OP,
+    ENUM_ORDER_POOL_INDEX,
+    ENUM_ORDER_SELECT_FLAGS,
     OrderClose,
     OrderCloseBy,
     OrderClosePrice,
@@ -101,16 +103,34 @@ const {
 } = require('./math');
 
 const {
+    ENUM_TIMEFRAMES,
+    ENUM_SERIES_INFO_INTEGER,
+    ENUM_SERIESMODE,
     SeriesInfoInteger,
     RefreshRates,
-    CopyRates,
-    CopyTime,
-    CopyOpen,
-    CopyHigh,
-    CopyLow,
-    CopyClose,
-    CopyTickVolume,
+    CopyRatesFromStart,
+    CopyRatesFromDate,
+    CopyRatesBetween,
+    CopyTimeFromStart,
+    CopyTimeFromDate,
+    CopyTimeBetween,
+    CopyOpenFromStart,
+    CopyOpenFromDate,
+    CopyOpenBetween,
+    CopyHighFromStart,
+    CopyHighFromDate,
+    CopyHighBetween,
+    CopyLowFromStart,
+    CopyLowFromDate,
+    CopyLowBetween,
+    CopyCloseFromStart,
+    CopyCloseFromDate,
+    CopyCloseBetween,
+    CopyTickVolumeFromStart,
+    CopyTickVolumeFromDate,
+    CopyTickVolumeBetween,
     Bars,
+    BarsBetween,
     iBars,
     iBarShift,
     iClose,
@@ -124,6 +144,7 @@ const {
 } = require('./timeseries');
 
 const {
+    MqlDateTime,
     TimeCurrent,
     TimeLocal,
     TimeGMT,
@@ -250,13 +271,53 @@ const {
     ZeroMemory
 } = require('./common');
 
+const {
+    Login,
+    Logout,
+    GetMyAccounts,
+    GetWatchedAccounts,
+    GetOpenOrders,
+    GetOpenTrades,
+    GetHistory,
+    GetDailyGain,
+    GetGain,
+    GetCustomWidget,
+    GetCommunitySentiment,
+    GetCommunitySentimentByCountry,
+    GetDataDaily
+} = require('./myfxbook');
+
 function initialize(hostname,token,accountId) {
     var {account} = require('./account');
     account.set(hostname,token,accountId);
+
+    var {systime} = require('./account');
+    systime.start(new Date().getTime());
 }
+
+function configureFTP(options) {
+    var {ftpClient} = require('./account');
+    ftpClient.set(options);
+}
+
+function configureTwilio(options) {
+    var {twilio} = require('./account');
+    twilio.set(options);
+}
+
+function configSendGrid(apiKey,from,to) {
+    var {sendgrid} = require('./account');
+    sendgrid.set(apiKey,from,to);
+}
+
+var {systime} = require('./account');
+systime.set(new Date().getTime());
 
 module.exports = {
     initialize,
+    configureFTP,
+    configureTwilio,
+    configSendGrid,
     MARKETINFO_MODE,
     ENUM_SYMBOL_INFO_INTEGER,
     ENUM_SYMBOL_INFO_DOUBLE,
@@ -299,6 +360,8 @@ module.exports = {
     AccountStopoutLevel,
     AccountStopoutMode,
     TRADE_OP,
+    ENUM_ORDER_POOL_INDEX,
+    ENUM_ORDER_SELECT_FLAGS,
     OrderClose,
     OrderCloseBy,
     OrderClosePrice,
@@ -345,16 +408,34 @@ module.exports = {
     MathSrand,
     MathTan,
     MathIsValidNumber,
+    ENUM_TIMEFRAMES,
+    ENUM_SERIES_INFO_INTEGER,
+    ENUM_SERIESMODE,
     SeriesInfoInteger,
     RefreshRates,
-    CopyRates,
-    CopyTime,
-    CopyOpen,
-    CopyHigh,
-    CopyLow,
-    CopyClose,
-    CopyTickVolume,
+    CopyRatesFromStart,
+    CopyRatesFromDate,
+    CopyRatesBetween,
+    CopyTimeFromStart,
+    CopyTimeFromDate,
+    CopyTimeBetween,
+    CopyOpenFromStart,
+    CopyOpenFromDate,
+    CopyOpenBetween,
+    CopyHighFromStart,
+    CopyHighFromDate,
+    CopyHighBetween,
+    CopyLowFromStart,
+    CopyLowFromDate,
+    CopyLowBetween,
+    CopyCloseFromStart,
+    CopyCloseFromDate,
+    CopyCloseBetween,
+    CopyTickVolumeFromStart,
+    CopyTickVolumeFromDate,
+    CopyTickVolumeBetween,
     Bars,
+    BarsBetween,
     iBars,
     iBarShift,
     iClose,
@@ -365,6 +446,7 @@ module.exports = {
     iOpen,
     iTime,
     iVolume,
+    MqlDateTime,
     TimeCurrent,
     TimeLocal,
     TimeGMT,
@@ -479,5 +561,18 @@ module.exports = {
     TesterStatistics,
     TranslateKey,
     WebRequest,
-    ZeroMemory
+    ZeroMemory,
+    Login,
+    Logout,
+    GetMyAccounts,
+    GetWatchedAccounts,
+    GetOpenOrders,
+    GetOpenTrades,
+    GetHistory,
+    GetDailyGain,
+    GetGain,
+    GetCustomWidget,
+    GetCommunitySentiment,
+    GetCommunitySentimentByCountry,
+    GetDataDaily
 };
