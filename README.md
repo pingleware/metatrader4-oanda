@@ -331,6 +331,23 @@ The following functions are supported and use callbacks for asynchronous communi
     WebRequest,
     ZeroMemory
 
+## MYFXBOOK API
+
+    Login,
+    Logout,
+    GetMyAccounts,
+    GetWatchedAccounts,
+    GetOpenOrders,
+    GetOpenTrades,
+    GetHistory,
+    GetDailyGain,
+    GetGain,
+    GetCustomWidget,
+    GetCommunitySentiment,
+    GetCommunitySentimentByCountry,
+    GetDataDaily
+
+
 
 # Release Schedule
 
