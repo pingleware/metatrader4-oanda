@@ -14,8 +14,17 @@
   },
   "keywords": [
     "metatrader",
-    "oanda",
-    "pingleware"
+    "@oanda/v20",
+    "pingleware",
+    "node-mp3-player",
+    "sleep-time",
+    "ta-lib",
+    "ftps",
+    "twilio",
+    "@sendgrid/mail",
+    "ssh-key-decrypt",
+    "sha1",
+    "sha256"
   ],
   "author": "PressPage Entertainment Inc <presspage.entertainment@gmail.com>",
   "license": "CC-BY-4.0",
@@ -25,8 +34,18 @@
   "homepage": "https://github.com/pingleware/metatrader4-oanda#readme",
   "dependencies": {
     "@oanda/v20": "^3.0.25-0",
+    "@sendgrid/mail": "^7.7.0",
+    "ftps": "^1.2.0",
+    "hash.js": "^1.1.7",
+    "node-mp3-player": "^1.0.3",
+    "phantom": "^6.3.0",
     "request": "^2.88.2",
-    "ta-lib": "^0.11.0"
+    "sha1": "^1.1.1",
+    "sha256": "^0.2.0",
+    "sleep-time": "^0.1.0",
+    "ssh-key-decrypt": "^0.1.2",
+    "ta-lib": "^0.11.0",
+    "twilio": "^3.82.0"
   },
   "private": false
 }

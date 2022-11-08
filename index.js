@@ -17,7 +17,9 @@ const {
     SymbolInfoString,
     SymbolInfoTick,
     SymbolInfoSessionQuote,
-    SymbolInfoSessionTrade
+    SymbolInfoSessionTrade,
+    OrderBook,
+    PositionBook
 } = require('./marketinfo');
 
 const {
@@ -287,12 +289,15 @@ const {
     GetDataDaily
 } = require('./myfxbook');
 
-function initialize(hostname,token,accountId) {
-    var {account} = require('./account');
-    account.set(hostname,token,accountId);
+var {
+    systime,
+    setAccountContext
+} = require('./account');
 
-    var {systime} = require('./account');
-    systime.start(new Date().getTime());
+function initialize(hostname,token,accountId) {
+    setAccountContext(hostname,token,accountId);
+
+    systime.set(new Date().getTime());
 }
 
 function configureFTP(options) {
@@ -310,8 +315,6 @@ function configSendGrid(apiKey,from,to) {
     sendgrid.set(apiKey,from,to);
 }
 
-var {systime} = require('./account');
-systime.set(new Date().getTime());
 
 module.exports = {
     initialize,
@@ -335,6 +338,8 @@ module.exports = {
     SymbolInfoTick,
     SymbolInfoSessionQuote,
     SymbolInfoSessionTrade,
+    OrderBook,
+    PositionBook,
     ENUM_ACCOUNT_INFO_INTEGER,
     ENUM_ACCOUNT_INFO_DOUBLE,
     ENUM_ACCOUNT_INFO_STRING,

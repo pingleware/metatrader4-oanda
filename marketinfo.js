@@ -1,7 +1,12 @@
 "use strict"
 
-const {SendRequest} = require('./send');
-var account = require('./account');
+const {
+    SendRequest
+} = require('./send');
+var {
+    account,
+    getAccountContext,
+} = require('./account');
 
 
 const MARKETINFO_MODE = {
@@ -148,7 +153,7 @@ function datetime(value) {
  * Returns various data about securities listed in the "Market Watch" window
  */
 function MarketInfo(symbol, information_type, callback) {
-    var context = account.context;
+    var context = getAccountContext();
     SendRequest(context,`v3/accounts/${account.number}/instruments`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
@@ -248,7 +253,7 @@ function MarketInfo(symbol, information_type, callback) {
     });
 }
  
-var MerketWatch = [];
+var MarketWatch = [];
 
 /**
  * SymbolsTotal
@@ -258,14 +263,17 @@ function SymbolsTotal(selected, callback) {
     if (selected) {
         callback({status: 'success', total: MarketWatch.length, function: 'SymbolsTotal'});
     } else {
-        var context = account.context;
+        var context = getAccountContext();
         SendRequest(context,`v3/accounts/${account.number}/instruments`,'GET',null,function(json){
             var data = JSON.parse(json);
             if (data.errorMessage) {
                 callback({status: 'error', message: data.errorMessage, function: 'SymbolsTotal'});
             } else {
                 var instruments = data.instruments;
-                callback({status: 'success', total: instruments.length, function: 'SymbolsTotal'});
+                instruments.forEach(function(symbol){
+                    MarketWatch.push(symbol.name);
+                });
+                callback({status: 'success', total: MarketWatch.length, function: 'SymbolsTotal'});
             }
         });    
     }
@@ -284,7 +292,7 @@ function SymbolName(pos,selected,callback) {
             callback({status: 'error', message: error, function: 'SymbolName'});
         }
     } else {
-        var context = account.context;
+        var context = getAccountContext();
         SendRequest(context,`v3/accounts/${account.number}/instruments`,'GET',null,function(json){
             var data = JSON.parse(json);
             if (data.errorMessage) {
@@ -319,7 +327,7 @@ function SymbolSelect(symbol,add_remove,callback) {
  * Returns the double value of the symbol for the corresponding property
  */
 function SymbolInfoDouble(symbol, property_id, callback) {
-    var context = account.context;
+    var context = getAccountContext();
     SendRequest(context,`v3/accounts/${account.number}/instruments`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
@@ -418,7 +426,7 @@ function SymbolInfoDouble(symbol, property_id, callback) {
  * Returns a value of an integer type (long, datetime, int or bool) of a specified symbol for the corresponding property
  */
 function SymbolInfoInteger(symbol, property_id, callback) {
-    var context = account.context;
+    var context = getAccountContext();
     SendRequest(context,`v3/accounts/${account.number}/instruments`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
@@ -501,7 +509,7 @@ function SymbolInfoInteger(symbol, property_id, callback) {
  * Returns a value of the string type of a specified symbol for the corresponding property
  */
 function SymbolInfoString(symbol, property_id, callback) {
-    var context = account.context;
+    var context = getAccountContext();
     SendRequest(context,`v3/accounts/${account.number}/instruments`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
@@ -541,7 +549,7 @@ function SymbolInfoString(symbol, property_id, callback) {
  * Returns the current prices for the specified symbol in a variable of the MqlTick type
  */
 function SymbolInfoTick(symbol, callback) {
-    var context = account.context;
+    var context = getAccountContext();
     SendRequest(context,`v3/accounts/${account.number}/pricing?instruments=${symbol}`,'GET',null,function(json){
         var data = JSON.parse(json);
         if (data.errorMessage) {
@@ -576,6 +584,84 @@ function SymbolInfoSessionTrade(symbol,day_of_week,session_index,from,to,callbac
     callback({status: 'error', message: 'not implemented', function: 'SymbolInfoSessionTrade'});
 } 
 
+/**
+ * OrderBook
+ */
+function OrderBook(symbol,callback) {
+    var context = getAccountContext();
+    SendRequest(context,`v3/instruments/${symbol}/orderBook`,'GET',null,function(json){
+        var data = JSON.parse(json);
+        if (data.errorMessage) {
+            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/instruments/${symbol}/orderBook`, function: 'OrderBook'});
+        } else {
+            let totals = 0;
+            let price = 0;
+            let longPercentage = 0;
+            let shortPercentage = 0;
+            data.orderBook.buckets.forEach(function(bucket){
+                price += Number(bucket.price);
+                longPercentage += Number(bucket.longCountPercent);
+                shortPercentage += Number(bucket.shortCountPercent);
+                totals++;
+            });
+            price = Number((price / totals) * 100).toFixed(0);
+            longPercentage = Number((longPercentage / totals) * 100).toFixed(0);
+            shortPercentage = Number((shortPercentage / totals) * 100).toFixed(0);
+            callback({status: 'success', price: price, longPercentage: longPercentage, shortPercentage: shortPercentage, function: 'OrderBook'});
+        }
+    });
+}
+
+function PositionBook(symbol,callback) {
+    var context = getAccountContext();
+    SendRequest(context,`v3/instruments/${symbol}/positionBook`,'GET',null,function(json){
+        var data = JSON.parse(json);
+        if (data.errorMessage) {
+            callback({status: 'error', message: data.errorMessage, path: `v3/accounts/instruments/${symbol}/positionBook`, function: 'PositionBook'});
+        } else {
+            let totals = 0;
+            let price = 0;
+            let longPercentage = 0;
+            let shortPercentage = 0;
+            /**
+             * {
+             *     # 
+             *     # The lowest price (inclusive) covered by the bucket. The bucket covers the
+             *     # price range from the price to price + the position book’s bucketWidth.
+             *     # 
+             *     price : (PriceValue),
+             *
+             *     # 
+             *     # The percentage of the total number of positions represented by the long
+             *     # positions found in this bucket.
+             *     # 
+             *     longCountPercent : (DecimalNumber),
+             * 
+             *     #     # The percentage of the total number of positions represented by the short
+             *     # positions found in this bucket.
+             *     # 
+             *     shortCountPercent : (DecimalNumber)
+             * }
+             * 
+             * Calculate the average percentage @see https://www.indeed.com/career-advice/career-development/how-to-calculate-average-percentage
+             * 
+             *      [(Percentage 1 + percentage 2)/(sample size 1 + sample size 2)] x 100 = average percentage
+             * 
+             */
+            data.positionBook.buckets.forEach(function(bucket){
+                price += Number(bucket.price);
+                longPercentage += Number(bucket.longCountPercent);
+                shortPercentage += Number(bucket.shortCountPercent);
+                totals++;
+            });
+            price = Number((price / totals) * 100).toFixed(0);
+            longPercentage = Number((longPercentage / totals) * 100).toFixed(0);
+            shortPercentage = Number((shortPercentage / totals) * 100).toFixed(0);
+            callback({status: 'success', price: price, longPercentage: longPercentage, shortPercentage: shortPercentage, function: 'PositionBook'});
+        }
+    });
+}
+
 module.exports = {
     MARKETINFO_MODE,
     ENUM_SYMBOL_INFO_INTEGER,
@@ -594,5 +680,7 @@ module.exports = {
     SymbolInfoString,
     SymbolInfoTick,
     SymbolInfoSessionQuote,
-    SymbolInfoSessionTrade
+    SymbolInfoSessionTrade,
+    OrderBook,
+    PositionBook
 }

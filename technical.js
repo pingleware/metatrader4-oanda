@@ -11,49 +11,49 @@ const ENUM_MA_METHOD = {
 };
 
 /**
-iAC
-Accelerator Oscillator
+ * iAC
+ * Accelerator Oscillator
 */ 
 function iAC(symbol,timeframe,shift,callback){
     
 }
 /**
-iAD
-Accumulation/Distribution
+ * iAD
+ * Accumulation/Distribution
 */ 
 function iAD(callback){
     
 }
 /**
-iADX
-Average Directional Index
+ * iADX
+ * Average Directional Index
 */ 
 function iADX(callback){
 
 }
 /**
-iAlligator
-Alligator
+ * iAlligator
+ * Alligator
 */ 
 function iAlligator(callback){}
 /**
-iAO
-Awesome Oscillator
+ * iAO
+ * Awesome Oscillator
 */ 
 function iAO(callback){}
 /**
-iATR
-Average True Range
+ * iATR
+ * Average True Range
 */ 
 function iATR(callback){}
 /**
-iBearsPower
-Bears Power
+ * iBearsPower
+ * Bears Power
 */ 
 function iBearsPower(callback){}
 /**
-iBands
-Bollinger Bands®
+ * iBands
+ * Bollinger Bands®
 */ 
 function iBands(symbol,timeframe,period,deviation,bands_shift,applied_price,mode,shift,callback){
 
@@ -61,23 +61,23 @@ function iBands(symbol,timeframe,period,deviation,bands_shift,applied_price,mode
     callback({status: 'success', bbands: talib.BBANDS(values,period,deviation)});
 }
 /**
-iBandsOnArray
-Calculation of Bollinger Bands® indicator on data, stored in a numeric array
+ * iBandsOnArray
+ * Calculation of Bollinger Bands® indicator on data, stored in a numeric array
 */ 
 function iBandsOnArray(callback){}
 /**
-iBullsPower
-Bulls Power
+ * iBullsPower
+ * Bulls Power
 */ 
 function iBullsPower(callback){}
 /**
-iCCI
-Commodity Channel Index
+ * iCCI
+ * Commodity Channel Index
 */ 
 function iCCI(callback){}
 /**
-iCCIOnArray
-Calculation of Commodity Channel Index indicator on data, stored in a numeric array
+ * iCCIOnArray
+ * Calculation of Commodity Channel Index indicator on data, stored in a numeric array
 */ 
 function iCCIOnArray(callback){}
 /**
@@ -107,63 +107,63 @@ function iCustom(callback,symbol,timeframe,name,...args){
     });
 }
 /**
-iDeMarker
-DeMarker
+ * iDeMarker
+ * DeMarker
 */ 
 function iDeMarker(callback){}
 /**
-iEnvelopes
-Envelopes
+ * iEnvelopes
+ * Envelopes
 */ 
 function iEnvelopes(callback){}
 /**
-iEnvelopesOnArray
-Calculation of Envelopes indicator on data, stored in a numeric array
+ * iEnvelopesOnArray
+ * Calculation of Envelopes indicator on data, stored in a numeric array
 */ 
 function iEnvelopesOnArray(callback){}
 /**
-iForce
-Force Index
+ * iForce
+ * Force Index
 */ 
 function iForce(callback){}
 /**
-iFractals
-Fractals
+ * iFractals
+ * Fractals
 */ 
 function iFractals(callback){}
 /**
-iGator
-Gator Oscillator
+ * iGator
+ * Gator Oscillator
 */ 
 function iGator(callback){}
 /**
-iIchimoku
-Ichimoku Kinko Hyo
+ * iIchimoku
+ * Ichimoku Kinko Hyo
 */ 
 function iIchimoku(callback){}
 /**
-iBWMFI
-Market Facilitation Index by Bill Williams
+ * iBWMFI
+ * Market Facilitation Index by Bill Williams
 */ 
 function iBWMFI(callback){}
 /**
-iMomentum
-Momentum
+ * iMomentum
+ * Momentum
 */ 
 function iMomentum(callback){}
 /**
-iMomentumOnArray
-Calculation of Momentum indicator on data, stored in a numeric array
+ * iMomentumOnArray
+ * Calculation of Momentum indicator on data, stored in a numeric array
 */ 
 function iMomentumOnArray(callback){}
 /**
-iMFI
-Money Flow Index
+ * iMFI
+ * Money Flow Index
 */ 
 function iMFI(callback){}
 /**
-iMA
-Moving Average
+ * iMA
+ * Moving Average
 */ 
 function iMA(symbol,timeframe,period,ma_shift,ma_method,applied_price,shift,callback){
     switch(ma_method) {
@@ -182,70 +182,70 @@ function iMA(symbol,timeframe,period,ma_shift,ma_method,applied_price,shift,call
     }
 }
 /**
-iMAOnArray
-Calculation of Moving Average indicator on data, stored in a numeric array
+ * iMAOnArray
+ * Calculation of Moving Average indicator on data, stored in a numeric array
 */ 
 function iMAOnArray(callback){}
 /**
-iOsMA
-Moving Average of Oscillator (MACD histogram)
+ * iOsMA
+ * Moving Average of Oscillator (MACD histogram)
 */ 
 function iOsMA(callback){}
 /**
-iMACD
-Moving Averages Convergence-Divergence
+ * iMACD
+ * Moving Averages Convergence-Divergence
 */ 
 function iMACD(callback){
     talib.MACD(values,i12,i26,i9);
 }
 /**
-iOBV
-On Balance Volume
+ * iOBV
+ * On Balance Volume
 */ 
 function iOBV(callback){}
 /**
-iSAR
-Parabolic Stop And Reverse System
+ * iSAR
+ * Parabolic Stop And Reverse System
 */ 
 function iSAR(callback){}
 /**
-iRSI
-Relative Strength Index
+ * iRSI
+ * Relative Strength Index
 */ 
 function iRSI(callback){
     talib.RSI(values,period);
 }
 /**
-iRSIOnArray
-Calculation of Momentum indicator on data, stored in a numeric array
+ * iRSIOnArray
+ * Calculation of Momentum indicator on data, stored in a numeric array
 */ 
 function iRSIOnArray(callback){}
 /**
-iRVI
-Relative Vigor Index
+ * iRVI
+ * Relative Vigor Index
 */ 
 function iRVI(callback){}
 /**
-iStdDev
-Standard Deviation
+ * iStdDev
+ * Standard Deviation
 */ 
 function iStdDev(callback){
 }
 /**
-iStdDevOnArray
-Calculation of Standard Deviation indicator on data, stored in a numeric array
+ * iStdDevOnArray
+ * Calculation of Standard Deviation indicator on data, stored in a numeric array
 */ 
 function iStdDevOnArray(callback){}
 /**
-iStochastic
-Stochastic Oscillator
+ * iStochastic
+ * Stochastic Oscillator
 */ 
 function iStochastic(callback){
     
 }
 /**
-iWPR
-Williams' Percent Range
+ * iWPR
+ * Williams' Percent Range
  */
 function iWPR(callback){
     talib.WILLR(values,lows,closes,lookback);

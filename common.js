@@ -322,7 +322,7 @@ function SendNotification(message,callback){
  * Suspends execution of the current Expert Advisor or script within a specified interval
 */ 
 function Sleep(milliseconds){
-    const sleepTime = requre('sleep-time');
+    const sleepTime = require('sleep-time');
     sleepTime(milliseconds);    
 }
 /**

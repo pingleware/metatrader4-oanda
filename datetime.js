@@ -4,11 +4,11 @@ const {systime} = require('./account');
 
 var MqlDateTime = { 
     year: 2022,        // Year 
-    mon: 09,           // Month 
+    mon: 9,           // Month 
     day: 19,           // Day 
-    hour: 00,          // Hour 
-    min: 00,           // Minutes 
-    sec: 00,           // Seconds 
+    hour: 0,          // Hour 
+    min: 0,           // Minutes 
+    sec: 0,           // Seconds 
     day_of_week: 1,    // Day of week (0-Sunday, 1-Monday, ... ,6-Saturday) 
     day_of_year: 0     // Day number of the year (January 1st is assigned the number value of zero) 
 };
