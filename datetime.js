@@ -18,21 +18,21 @@ var MqlDateTime = {
  * Returns the last known server time (time of the last quote receipt) in the datetime format
 */ 
 function TimeCurrent(){
-    return new Date().toISOString();
+    return {status: 'success', current: new Date().toISOString(), function: 'TimeCurrent'};
 }
 /**
  * TimeLocal
  * Returns the local computer time in datetime format
 */ 
 function TimeLocal(){
-    return new Date().toLocaleTimeString();
+    return {status: 'success', local: new Date().toLocaleTimeString(), function: 'TimeLocal'};
 }
 /**
  * TimeGMT
  * Returns GMT in datetime format with the Daylight Saving Time by local time of the computer, where the client terminal is running
 */ 
 function TimeGMT(){
-    return new Date().toUTCString();
+    return {status: 'success', gmt_utc: new Date().toUTCString(), function: 'TimeGMT'};
 }
 /**
  * TimeDaylightSavings
@@ -42,14 +42,14 @@ function TimeDaylightSavings(){
     let now = new Date();
     let jan = new Date(now.getFullYear(), 0, 1).getTimezoneOffset();
     let jul = new Date(now.getFullYear(), 6, 1).getTimezoneOffset();
-    return (Math.max(jan, jul) !== now.getTimezoneOffset());    
+    return { status: 'success', daylight_savings: (Math.max(jan, jul) !== now.getTimezoneOffset()), function: 'TimeDaylightSavings'};    
 }
 /**
  * TimeGMTOffset
  * Returns the current difference between GMT time and the local computer time in seconds, taking into account DST switch
 */ 
 function TimeGMTOffset(){
-    return new Date().getTimezoneOffset();
+    return { status: 'success', gmt_offset: new Date().getTimezoneOffset(), function: 'TimeGMTOffset'};
 }
 /**
  * TimeToStruct
@@ -70,28 +70,28 @@ function TimeToStruct(time_value){
     var oneDay = 1000 * 60 * 60 * 24;
     MqlDateTime.day_of_year = Math.floor(diff / oneDay);
 
-    return MqlDateTime;
+    return {status: 'success', mqldatetime: MqlDateTime, function: 'TimeToStruct'};
 }
 /**
  * StructToTime
  * Converts a variable of MqlDateTime structure type into a datetime value
 */ 
 function StructToTime(datetime){
-    return new Date(datetime.year,datetime.mon,datetime.day,datetime.hour,datetime.min,datetime.sec).getTime();
+    return {status: 'success', datetimee: new Date(datetime.year,datetime.mon,datetime.day,datetime.hour,datetime.min,datetime.sec).getTime(), function: 'StructToTime'};
 }
 /**
  * Day
  * Returns the current day of the month, i.e., the day of month of the last known server time
 */ 
 function Day(){
-    return new Date().getDate();
+    return {status: 'success', day: new Date().getDate(), function: 'Day'};
 }
 /**
  * DayOfWeek
  * Returns the current zero-based day of the week of the last known server time
 */ 
 function DayOfWeek(){
-    return new Date().getDay();
+    return {status: 'success', dayofweek: new Date().getDay(), function: 'DayOfWeek'};
 }
 /**
  * DayOfYear
@@ -102,28 +102,28 @@ function DayOfYear(){
     var start = new Date(now.getFullYear(), 0, 0);
     var diff = now - start;
     var oneDay = 1000 * 60 * 60 * 24;
-    return Math.floor(diff / oneDay);
+    return {status: 'success', dayofyear: Math.floor(diff / oneDay), function: 'DayOfYear'};
 }
 /**
  * Hour
  * Returns the hour of the last known server time by the moment of the program start
 */ 
 function Hour(){
-    return new Date().getHours();
+    return {status: 'success', hour: new Date().getHours(), function: 'Hour'};
 }
 /**
  * Minute
  * Returns the current minute of the last known server time by the moment of the program start
 */ 
 function Minute(){
-    return new Date().getMinutes();
+    return {status: 'success', minute: new Date().getMinutes(), function: 'Minute'};
 }
 /**
  * Month
  * Returns the current month as number, i.e., the number of month of the last known server time
 */ 
 function Month(){
-    return new Date.getDate();
+    return {status: 'success', month: new Date().getDate(), function: 'Month'};
 }
 /**
  * Seconds
@@ -131,7 +131,7 @@ function Month(){
 */ 
 function Seconds(){
     var now = new Date();
-    return new Date(now.getTime() - systime.start).getSeconds();
+    return {status: 'success', seconds: new Date(now.getTime() - systime.start).getSeconds(), function: 'Seconds'};
 }
 /**
  * TimeDay
@@ -139,7 +139,7 @@ function Seconds(){
 */ 
 function TimeDay(time){
     var _time = new Date(time);
-    return _time.getMonth();
+    return {status: 'success', day: _time.getMonth(), function: 'TimeDay'};
 }
 /**
  * TimeDayOfWeek
@@ -147,7 +147,7 @@ function TimeDay(time){
 */ 
 function TimeDayOfWeek(time){
     var _time = new Date(time);
-    return _time.getDay();
+    return {status: 'success', day: _time.getDay(), function: 'TimeDayOfWeek'};
 }
 /**
  * TimeDayOfYear
@@ -158,7 +158,7 @@ function TimeDayOfYear(time){
     var start = new Date(now.getFullYear(), 0, 0);
     var diff = now - start;
     var oneDay = 1000 * 60 * 60 * 24;
-    return Math.floor(diff / oneDay);
+    return {status: 'success', day: Math.floor(diff / oneDay), function: 'TimeDayOfYear'};
 }
 /**
  * TimeHour
@@ -166,7 +166,7 @@ function TimeDayOfYear(time){
 */ 
 function TimeHour(time){
     var _time = new Date(time);
-    return _time.getHours();
+    return {status: 'success', hour: _time.getHours(), function: 'TimeHour'};
 }
 /**
  * TimeMinute
@@ -174,7 +174,7 @@ function TimeHour(time){
 */ 
 function TimeMinute(time){
     var _time = new Date(time);
-    return _time.getMinutes();
+    return {status: 'success', minute: _time.getMinutes(), function: 'TimeMinute'};
 }
 /**
  * TimeMonth
@@ -182,7 +182,7 @@ function TimeMinute(time){
 */ 
 function TimeMonth(time){
     var _time = new Date(time);
-    return _time.getDate();
+    return {status: 'success', month: _time.getDate(), function: 'TimeMonth'};
 }
 /**
  * TimeSeconds
@@ -190,7 +190,7 @@ function TimeMonth(time){
 */ 
 function TimeSeconds(time){
     var _time = new Date(time);
-    return _time.getSeconds();
+    return {status: 'success', seconds: _time.getSeconds(), function: 'TimeSeconds'};
 }
 /**
  * TimeYear
@@ -198,14 +198,14 @@ function TimeSeconds(time){
 */ 
 function TimeYear(time){
     var _time = new Date(time);
-    return _time.getFullYear();
+    return {status: 'success', year: _time.getFullYear(), function: 'TimeYear'};
 }
 /**
  * Year
  * Returns the current year, i.e., the year of the last known server time
 */
 function Year(){
-    return new Date().getFullYear();
+    return {status: 'success', year: new Date().getFullYear(), function: 'Year'};
 }
 
 
