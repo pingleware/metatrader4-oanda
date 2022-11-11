@@ -41,9 +41,7 @@ const ENUM_SERIESMODE = {
     MODE_TIME:      5   // Bar open time, used in ArrayCopySeries() function
 };
 
-var current_symbol = null;
-var current_timeframe = null;
-var current_rates = {};
+var {charts, account} = require('./account');
 
 var MqlRates = { 
     time: 0,         // Period start time, datetime 
@@ -61,31 +59,31 @@ var MqlRates = {
  * Returns information about the state of historical data
 */ 
 function SeriesInfoInteger(symbol,timeframe,property_id,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     SeriesInfoInteger(symbol,timeframe,property_id,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         switch(property_id) {
             case ENUM_SERIES_INFO_INTEGER.SERIES_BARS_COUNT:
-                callback({status: 'success', total: current_rates.length, function: 'SeriesInfoInteger'});
+                callback({status: 'success', total: charts.rates.length, function: 'SeriesInfoInteger'});
                 break;
             case ENUM_SERIES_INFO_INTEGER.SERIES_FIRSTDATE:
-                callback({status: 'success', firstdate: current_rates[0].time, function: 'SeriesInfoInteger'});
+                callback({status: 'success', firstdate: charts.rates[0].time, function: 'SeriesInfoInteger'});
                 break;
             case ENUM_SERIES_INFO_INTEGER.SERIES_LASTBAR_DATE:
-                callback({status: 'success', lastbar_date: current_rates[current_rates.length - 1].time, function: 'SeriesInfoInteger'});
+                callback({status: 'success', lastdate: charts.rates[charts.rates.length - 1].time, function: 'SeriesInfoInteger'});
                 break;
             case ENUM_SERIES_INFO_INTEGER.SERIES_SERVER_FIRSTDATE:
-                callback({status: 'success', firstdate: current_rates[0].time, function: 'SeriesInfoInteger'});
+                callback({status: 'success', firstdate: charts.rates[0].time, function: 'SeriesInfoInteger'});
                 break;
             default:
                 callback({status: 'error', message: 'mismatch input', function: 'SeriesInfoInteger'});
@@ -98,11 +96,11 @@ function SeriesInfoInteger(symbol,timeframe,property_id,callback){
  * RefreshRates
  * Refreshing of data in pre-defined variables and series arrays
 */ 
-function RefreshRates(callback){
-    if (current_symbol && current_timeframe) {
+function RefreshRates(callback=null){
+    if (charts.symbol && charts.timeframe) {
         var context = account.context;
         var granularity = 'D';
-        switch(current_timeframe) {
+        switch(charts.timeframe) {
             case ENUM_TIMEFRAMES.PERIOD_S5:
                 granularity = 'S5';
                 break;
@@ -161,34 +159,51 @@ function RefreshRates(callback){
                 granularity = 'D';
                 break;
         }
-        SendRequest(context,`v3/accounts/${account.number}/candles/latest?instrument=${current_symbol}&granularity=${granularity}`,'GET',null,function(json){
+        SendRequest(context,`v3/accounts/${account.number}/candles/latest?instrument=${charts.symbol}&granularity=${granularity}`,'GET',null,function(json){
             var data = JSON.parse(json);
             if (data.errorMessage) {
-                callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/candles/latest?instrument=${current_symbol}&granularity=${granularity}`, function: 'RefreshRates'});
+                if (callback) {
+                    callback({status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/candles/latest?instrument=${charts.symbol}&granularity=${granularity}`, function: 'RefreshRates'});
+                } else {
+                    return {status: 'error', message: data.errorMessage, path: `v3/accounts/${account.number}/candles/latest?instrument=${charts.symbol}&granularity=${granularity}`, function: 'RefreshRates'};
+                }
             } else {
                 if (data.candles) {
-                    current_rates = {};
+                    charts.emptyRates();
                     data.candles.forEach(function(candle){
                         if (candle.complete) {
+                            MqlRates = {};
                             MqlRates.time = candle.time;
-                            MqlRates.real_volume = candle.volume;
-                            MqlRates.tick_volume = candle.volume;
-                            MqlRates.high = candle.mid.h;
-                            MqlRates.low = candle.mid.l;
-                            MqlRates.open = candle.mid.o;
-                            MqlRates.close = candle.mid.c;
+                            MqlRates.real_volume = Number(candle.volume);
+                            MqlRates.tick_volume = Number(candle.volume);
+                            MqlRates.high = Number(candle.mid.h);
+                            MqlRates.low = Number(candle.mid.l);
+                            MqlRates.open = Number(candle.mid.o);
+                            MqlRates.close = Number(candle.mid.c);
                             MqlRates.spread = 0;
-                            current_rates.push(MqlRates);
+                            charts.setRates(MqlRates);
                         }
                     });
-                    callback({status: 'success', rates: current_rates, function: 'RefreshRates'});
+                    if (callback) {
+                        callback({status: 'success', rates: charts.rates, function: 'RefreshRates'});
+                    } else {
+                        return {status: 'success', rates: charts.rates, function: 'RefreshRates'};
+                    }
                 } else {
-                    callback({status: 'error', message: 'no candles', function: 'RefreshRates'});
+                    if (callback) {
+                        callback({status: 'error', message: 'no candles', function: 'RefreshRates'});
+                    } else {
+                        return {status: 'error', message: 'no candles', function: 'RefreshRates'};
+                    }
                 }
             }
         });
     } else {
-        callback({status: 'error', message: 'no active symbol'});
+        if (callback) {
+            callback({status: 'error', message: 'no active symbol', function: 'RefreshRates'});
+        } else {
+            return {status: 'error', message: 'no active symbol', function: 'RefreshRates'};
+        }
     }
 }
 /**
@@ -196,21 +211,21 @@ function RefreshRates(callback){
  * Gets history data of the Rates structure for a specified symbol and period into an array
 */ 
 function CopyRatesFromStart(symbol,timeframe,pos,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyRatesFromStart(symbol,timeframe,pos,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var rates = [];
-        current_rates.forEach(function(current_rate,index){
+        charts.rates.forEach(function(current_rate,index){
             if (index >= pos && rates.length < count) {
                 rates.push(current_rate);
             }
@@ -221,22 +236,22 @@ function CopyRatesFromStart(symbol,timeframe,pos,count,callback){
     }
 }
 function CopyRatesFromDate(symbol,timeframe,start_time,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyRatesFromDate(symbol,timeframe,start_time,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var rates = [];
-        current_rates.forEach(function(current_rate){
-            if (current_rate.time >= start_time && rates.length < count) {
+        charts.rates.forEach(function(current_rate){
+            if (new Date(current_rate.time).getTime() >= new Date(start_time).getTime() && rates.length < count) {
                 rates.push(current_rate);
             }
         });
@@ -246,22 +261,22 @@ function CopyRatesFromDate(symbol,timeframe,start_time,count,callback){
     }
 }
 function CopyRatesBetween(symbol,timeframe,start_time,end_time,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyRatesBetween(symbol,timeframe,start_time,end_time,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var rates = [];
-        current_rates.forEach(function(current_rate){
-            if (current_rate.time >= start_time && current_rate.time < end_time) {
+        charts.rates.forEach(function(current_rate){
+            if (new Date(current_rate.time).getTime() >= new Date(start_time).getTime() && new Date(current_rate.time).getTime() < new Date(end_time).getTime()) {
                 rates.push(current_rate);
             }
         });
@@ -275,21 +290,21 @@ function CopyRatesBetween(symbol,timeframe,start_time,end_time,callback){
  * Gets history data on bar opening time for a specified symbol and period into an array
 */ 
 function CopyTimeFromStart(symbol,timeframe,pos,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyTimeFromStart(symbol,timeframe,pos,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var time_array = [];
-        current_rates.forEach(function(current_rate,index){
+        charts.rates.forEach(function(current_rate,index){
             if (index >= pos && time_array.length < count) {
                 time_array.push(current_rate.time);
             }
@@ -300,22 +315,22 @@ function CopyTimeFromStart(symbol,timeframe,pos,count,callback){
     }
 }
 function CopyTimeFromDate(symbol,timeframe,start_time,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyTimeFromDate(symbol,timeframe,start_time,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var time_array = [];
-        current_rates.forEach(function(current_rate){
-            if (current_rate.time >= start_time && time_array.length < count) {
+        charts.rates.forEach(function(current_rate){
+            if (new Date(current_rate.time).getTime() >= new Date(start_time).getTime() && time_array.length < count) {
                 time_array.push(current_rate.time);
             }
         });
@@ -325,23 +340,23 @@ function CopyTimeFromDate(symbol,timeframe,start_time,count,callback){
     }
 }
 function CopyTimeBetween(symbol,timeframe,start_time,end_time,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyTimeBetween(symbol,timeframe,start_time,end_time,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var time_array = [];
-        current_rates.forEach(function(current_rate){
-            if (current_rate.time >= start_time && current_rate.time < end_time) {
-                time_array.push(current_rate.time);
+        charts.rates.forEach(function(current_rate){
+            if (new Date(current_rate.time).getTime() >= new Date(start_time).getTime() && new Date(current_rate.time).getTime() < new Date(end_time).getTime()) {
+                time_array.push(Number(current_rate.time));
             }
         });
         callback({status: 'success', time: time_array, function: 'CopyTimeBetween'});    
@@ -354,23 +369,23 @@ function CopyTimeBetween(symbol,timeframe,start_time,end_time,callback){
  * Gets history data on bar opening price for a specified symbol and period into an array
 */ 
 function CopyOpenFromStart(symbol,timeframe,pos,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyOpenFromStart(symbol,timeframe,pos,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var open_array = [];
-        current_rates.forEach(function(current_rate,index){
+        charts.rates.forEach(function(current_rate,index){
             if (index >= pos && open_array.length < count) {
-                open_array.push(current_rate.open);
+                open_array.push(Number(current_rate.open));
             }
         });
         callback({status: 'success', open: open_array, function: 'CopyOpenFromStart'});    
@@ -379,23 +394,23 @@ function CopyOpenFromStart(symbol,timeframe,pos,count,callback){
     }
 }
 function CopyOpenFromDate(symbol,timeframe,start_time,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyOpenFromDate(symbol,timeframe,start_time,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var open_array = [];
-        current_rates.forEach(function(current_rate){
-            if (current_rate.time >= start_time && open_array.length < count) {
-                open_array.push(current_rate.open);
+        charts.rates.forEach(function(current_rate){
+            if (new Date(current_rate.time).getTime() >= new Date(start_time).getTime() && open_array.length < count) {
+                open_array.push(Number(current_rate.open));
             }
         });
         callback({status: 'success', open: open_array, function: 'CopyOpenFromDate'});    
@@ -403,24 +418,24 @@ function CopyOpenFromDate(symbol,timeframe,start_time,count,callback){
         callback({status: 'error', message: 'missing rates', function: 'CopyOpenFromDate'});
     }
 }
-function CopyOpenBetween(symbol,timeframe,start_time,end_timecallback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+function CopyOpenBetween(symbol,timeframe,start_time,end_time,callback){
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
-                    CopyOpenBetween(symbol,timeframe,start_time,end_timecallback);
+                    CopyOpenBetween(symbol,timeframe,start_time,end_time,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var open_array = [];
-        current_rates.forEach(function(current_rate){
-            if (current_rate.time >= start_time && current_rate.time < end_time) {
-                open_array.push(current_rate.open);
+        charts.rates.forEach(function(current_rate){
+            if (new Date(current_rate.time).getTime() >= new Date(start_time).getTime() && new Date(current_rate.time).getTime() < new Date(end_time).getTime()) {
+                open_array.push(Number(current_rate.open));
             }
         });
         callback({status: 'success', open: open_array, function: 'CopyOpenBetween'});    
@@ -433,23 +448,23 @@ function CopyOpenBetween(symbol,timeframe,start_time,end_timecallback){
  * Gets history data on maximal bar price for a specified symbol and period into an array
 */ 
 function CopyHighFromStart(symbol,timeframe,pos,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyHighFromStart(symbol,timeframe,pos,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var high_array = [];
-        current_rates.forEach(function(current_rate,index){
+        charts.rates.forEach(function(current_rate,index){
             if (index >= pos && high_array.length < count) {
-                high_array.push(current_rate.high);
+                high_array.push(Number(current_rate.high));
             }
         });
         callback({status: 'success', high: high_array, function: 'CopyHighFromStart'});    
@@ -458,23 +473,23 @@ function CopyHighFromStart(symbol,timeframe,pos,count,callback){
     }
 }
 function CopyHighFromDate(symbol,timeframe,start_time,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyHighFromDate(symbol,timeframe,start_time,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var high_array = [];
-        current_rates.forEach(function(current_rate){
+        charts.rates.forEach(function(current_rate){
             if (current_rate.time >= start_time && high_array.length < count) {
-                high_array.push(current_rate.high);
+                high_array.push(Number(current_rate.high));
             }
         });
         callback({status: 'success', high: high_array, function: 'CopyHighFromDate'});    
@@ -483,23 +498,23 @@ function CopyHighFromDate(symbol,timeframe,start_time,count,callback){
     }
 }
 function CopyHighBetween(symbol,timeframe,start_time,end_time,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyHighBetween(symbol,timeframe,start_time,end_time,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var high_array = [];
-        current_rates.forEach(function(current_rate){
+        charts.rates.forEach(function(current_rate){
             if (current_rate.time >= start_time && current_rate.time < end_time) {
-                high_array.push(current_rate.high);
+                high_array.push(Number(current_rate.high));
             }
         });
         callback({status: 'success', high: high_array, function: 'CopyHighBetween'});    
@@ -512,23 +527,23 @@ function CopyHighBetween(symbol,timeframe,start_time,end_time,callback){
  * Gets history data on minimal bar price for a specified symbol and period into an array
 */ 
 function CopyLowFromStart(symbol,timeframe,pos,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyLowFromStart(symbol,timeframe,pos,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var low_array = [];
-        current_rates.forEach(function(current_rate,index){
+        charts.rates.forEach(function(current_rate,index){
             if (index >= pos && low_array.length < count) {
-                low_array.push(current_rate.low);
+                low_array.push(Number(current_rate.low));
             }
         });
         callback({status: 'success', low: low_array, function: 'CopyLowFromStart'});    
@@ -537,23 +552,23 @@ function CopyLowFromStart(symbol,timeframe,pos,count,callback){
     }
 }
 function CopyLowFromDate(symbol,timeframe,start_time,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyLowFromDate(symbol,timeframe,start_time,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var low_array = [];
-        current_rates.forEach(function(current_rate){
+        charts.rates.forEach(function(current_rate){
             if (current_rate.time >= start_time && low_array.length < count) {
-                low_array.push(current_rate.low);
+                low_array.push(Number(current_rate.low));
             }
         });
         callback({status: 'success', low: low_array, function: 'CopyLowFromDate'});    
@@ -562,21 +577,21 @@ function CopyLowFromDate(symbol,timeframe,start_time,count,callback){
     }
 }
 function CopyLowBetween(symbol,timeframe,start_time,end_time,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyLowBetween(symbol,timeframe,start_time,end_time,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var low_array = [];
-        current_rates.forEach(function(current_rate){
+        charts.rates.forEach(function(current_rate){
             if (current_rate.time >= start_time && current_rate.time < end_time) {
                 low_array.push(current_rate.low);
             }
@@ -591,21 +606,21 @@ function CopyLowBetween(symbol,timeframe,start_time,end_time,callback){
  * Gets history data on bar closing price for a specified symbol and period into an array
 */ 
 function CopyCloseFromStart(symbol,timeframe,pos,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyCloseFromStart(symbol,timeframe,pos,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var close_array = [];
-        current_rates.forEach(function(current_rate,index){
+        charts.rates.forEach(function(current_rate,index){
             if (index >= pos && close_array.length < count) {
                 close_array.push(current_rate.close);
             }
@@ -616,21 +631,21 @@ function CopyCloseFromStart(symbol,timeframe,pos,count,callback){
     }
 }
 function CopyCloseFromDate(symbol,timeframe,start_time,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyCloseFromDate(symbol,timeframe,start_time,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var close_array = [];
-        current_rates.forEach(function(current_rate){
+        charts.rates.forEach(function(current_rate){
             if (current_rate.time >= start_time && close_array.length < count) {
                 close_array.push(current_rate.close);
             }
@@ -641,21 +656,21 @@ function CopyCloseFromDate(symbol,timeframe,start_time,count,callback){
     }
 }
 function CopyCloseBetween(symbol,timeframe,start_time,end_time,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyCloseBetween(symbol,timeframe,start_time,end_time,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var close_array = [];
-        current_rates.forEach(function(current_rate){
+        charts.rates.forEach(function(current_rate){
             if (current_rate.time >= start_time && current_rate.time < end_time) {
                 close_array.push(current_rate.close);
             }
@@ -670,21 +685,21 @@ function CopyCloseBetween(symbol,timeframe,start_time,end_time,callback){
  * Gets history data on tick volumes for a specified symbol and period into an array
 */ 
 function CopyTickVolumeFromStart(symbol,timeframe,pos,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyTickVolumeStart(symbol,timeframe,pos,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var tick_volume_array = [];
-        current_rates.forEach(function(current_rate,index){
+        charts.rates.forEach(function(current_rate,index){
             if (index >= pos && tick_volume_array.length < count) {
                 tick_volume_array.push(current_rate.tick_volume);
             }
@@ -694,23 +709,23 @@ function CopyTickVolumeFromStart(symbol,timeframe,pos,count,callback){
         callback({status: 'error', message: 'missing rates', function: 'CopyTickVolumeFromStart'});
     }
 }
-function CopyTickVolumeFromDate(csymbol,timeframe,start_time,count,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+function CopyTickVolumeFromDate(symbol,timeframe,start_time,count,callback){
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyTickVolumeFrom(csymbol,timeframe,start_time,count,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var tick_volume_array = [];
-        current_rates.forEach(function(current_rate){
-            if (current_rate.time >= start_time && tick_volume_array.length < count) {
+        charts.rates.forEach(function(current_rate){
+            if (new Date(current_rate.time).getTime() >= new Date(start_time).getTime() && tick_volume_array.length < count) {
                 tick_volume_array.push(current_rate.tick_volume);
             }
         });
@@ -720,22 +735,22 @@ function CopyTickVolumeFromDate(csymbol,timeframe,start_time,count,callback){
     }
 }
 function CopyTickVolumeBetween(symbol,timeframe,start_time,end_time,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     CopyTickVolumeBetween(symbol,timeframe,start_time,end_time,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var tick_volume_array = [];
-        current_rates.forEach(function(current_rate){
-            if (current_rate.time >= start_time && current_rate.time < end_time) {
+        charts.rates.forEach(function(current_rate){
+            if (new Date(current_rate.time).getTime() >= new Date(start_time).getTime() && new Date(current_rate.time).getTime() < new Date(end_time).getTime()) {
                 tick_volume_array.push(current_rate.tick_volume);
             }
         });
@@ -749,41 +764,41 @@ function CopyTickVolumeBetween(symbol,timeframe,start_time,end_time,callback){
  * Returns the number of bars count in the history for a specified symbol and period
 */ 
 function Bars(symbol,timeframe,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     Bars(symbol,timeframe,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
-        callback({status: 'success', bars: current_rates.length, function: 'Bars'});
+    } else if (charts.rates.length > 0) {
+        callback({status: 'success', bars: charts.rates.length, function: 'Bars'});
     } else {
         callback({status: 'error', message: 'missing rates', function: 'Bars'});
     }
 }
 function BarsBetween(symbol,timeframe,start_time,end_time,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     BarsBetween(symbol,timeframe,start_time,end_time,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var rates = [];
-        current_rates.forEach(function(current_rate){
-            if (current_rate.time >= start_time && current_rate.time < end_time) {
+        charts.rates.forEach(function(current_rate){
+            if (new Date(current_rate.time).getTime() >= new Date(start_time).getTime() && new Date(current_rate.time).getTime() < new Date(end_time).getTime()) {
                 rates.push(current_rate);
             }
         });
@@ -797,20 +812,20 @@ function BarsBetween(symbol,timeframe,start_time,end_time,callback){
  * Returns the number of bars on the specified chart
 */ 
 function iBars(symbol,timeframe,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     iBars(symbol,timeframe,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
-        callback({status: 'success', bars: current_rates.length, function: 'iBars'});
+    } else if (charts.rates.length > 0) {
+        callback({status: 'success', bars: charts.rates.length, function: 'iBars'});
     } else {
         callback({status: 'error', message: 'missing rates', function: 'iBars'});
     }
@@ -820,30 +835,30 @@ function iBars(symbol,timeframe,callback){
  * Returns the index of the bar which covers the specified time
 */ 
 function iBarShift(symbol,timeframe,search_time,exact,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     iBarShift(symbol,timeframe,search_time,exact,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         let found = -1;
-        current_rates.forEach(function(current_rate, index){
+        charts.rates.forEach(function(current_rate, index){
             if (exact) {
-                if (current_rate.time == search_time) {
+                if (new Date(current_rate.time).getTime() == new Date(search_time).getTime()) {
                     found = index;
                 }    
             } else {
-                if (current_rate.time == search_time) {
+                if (new Date(current_rate.time).getTime() >= new Date(search_time).getTime()) {
                     found = index;
                 } else {
-                    let diff = Math.abs(new Date(current_rate.time).getTime() - search_time);
+                    let diff = Math.abs(new Date(current_rate.time).getTime() - new Date(search_time).getTime());
                     if (found == -1 || diff < found) {
                         found = index;
                     }
@@ -860,21 +875,21 @@ function iBarShift(symbol,timeframe,search_time,exact,callback){
  * Returns Close price value for the bar of specified symbol with timeframe and shift
 */ 
 function iClose(symbol,timeframe,shift,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     iClose(symbol,timeframe,shift,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
-        var close = current_rates[shift].close;
-        callback({status: 'success', close: close, function: 'iClose'});
+    } else if (charts.rates.length > 0) {
+        var close = charts.rates[shift].close;
+        callback({status: 'success', close: Number(close), function: 'iClose'});
     } else {
         callback({status: 'error', message: 'missing rates', function: 'iClose'});
     }
@@ -884,21 +899,21 @@ function iClose(symbol,timeframe,shift,callback){
  * Returns High price value for the bar of specified symbol with timeframe and shift
 */ 
 function iHigh(symbol,timeframe,shift,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     iHigh(symbol,timeframe,shift,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
-        var high = current_rates[shift].high;
-        callback({status: 'success', high: high, function: 'iHigh'});
+    } else if (charts.rates.length > 0) {
+        var high = charts.rates[shift].high;
+        callback({status: 'success', high: Number(high), function: 'iHigh'});
     } else {
         callback({status: 'error', message: 'missing rates', function: 'iHigh'});
     }
@@ -908,45 +923,53 @@ function iHigh(symbol,timeframe,shift,callback){
  * Returns the shift of the maximum value over a specific number of bars
 */ 
 function iHighest(symbol,timeframe,seriesmode_type,count,start_pos,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     iHighest(symbol,timeframe,seriesmode_type,count,start_pos,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var rates = [];
-        current_rates.forEach(function(current_rate, index){
+        charts.rates.forEach(function(current_rate, index){
             if (index >= start_pos && rates.length < count) {
                 switch(seriesmode_type) {
                     case ENUM_SERIESMODE.MODE_CLOSE:
-                        rates.push(current_rate.close);
+                        rates.push(Number(current_rate.close));
                         break;
                     case ENUM_SERIESMODE.MODE_HIGH:
-                        rates.push(current_rate.high);
+                        rates.push(Number(current_rate.high));
                         break;
                     case ENUM_SERIESMODE.MODE_LOW:
-                        rates.push(current_rate.low);
+                        rates.push(Number(current_rate.low));
                         break;
                     case ENUM_SERIESMODE.MODE_OPEN:
-                        rates.push(current_rate.open);
+                        rates.push(Number(current_rate.open));
                         break;
                     case ENUM_SERIESMODE.MODE_TIME:
-                        rates.push(current_rate.time);
+                        rates.push(new Date(current_rate.time).getTime());
                         break;
                     case ENUM_SERIESMODE.MODE_VOLUME:
-                        rates.push(current_rate.volume);
+                        rates.push(Number(current_rate.volume));
                         break;
                 }        
             }
         });
-        var highest = Math.max(rates);
+        var highest = rates[0];
+        rates.forEach(function(rate){
+            if (rate > highest) {
+                highest = rate;
+            }
+        })
+        if (seriesmode_type == ENUM_SERIESMODE.MODE_TIME) {
+            highest = new Date(highest).toISOString();
+        }
         callback({status: 'success', highest: highest, function: 'iHighest'});
     } else {
         callback({status: 'error', message: 'missing rates', function: 'iHighest'});
@@ -957,21 +980,21 @@ function iHighest(symbol,timeframe,seriesmode_type,count,start_pos,callback){
  * Returns Low price value for the bar of indicated symbol with timeframe and shift
 */ 
 function iLow(symbol,timeframe,shift,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     iLow(symbol,timeframe,shift,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
-        var low = current_rates[shift].low;
-        callback({status: 'success', low: low, function: 'iLow'});
+    } else if (charts.rates.length > 0) {
+        var low = charts.rates[shift].low;
+        callback({status: 'success', low: Number(low), function: 'iLow'});
     } else {
         callback({status: 'error', message: 'missing rates', function: 'iLow'});
     }
@@ -981,46 +1004,54 @@ function iLow(symbol,timeframe,shift,callback){
  * Returns the shift of the lowest value over a specific number of bars
 */ 
 function iLowest(symbol,timeframe,seriesmode_type,count,start_pos,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     iLowest(symbol,timeframe,seriesmode_type,count,start_pos,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
+    } else if (charts.rates.length > 0) {
         var rates = [];
-        current_rates.forEach(function(current_rate, index){
+        charts.rates.forEach(function(current_rate, index){
             if (index >= start_pos && rates.length < count) {
                 switch(seriesmode_type) {
                     case ENUM_SERIESMODE.MODE_CLOSE:
-                        rates.push(current_rate.close);
+                        rates.push(Number(current_rate.close));
                         break;
                     case ENUM_SERIESMODE.MODE_HIGH:
-                        rates.push(current_rate.high);
+                        rates.push(Number(current_rate.high));
                         break;
                     case ENUM_SERIESMODE.MODE_LOW:
-                        rates.push(current_rate.low);
+                        rates.push(Number(current_rate.low));
                         break;
                     case ENUM_SERIESMODE.MODE_OPEN:
-                        rates.push(current_rate.open);
+                        rates.push(Number(current_rate.open));
                         break;
                     case ENUM_SERIESMODE.MODE_TIME:
-                        rates.push(current_rate.time);
+                        rates.push(new Date(current_rate.time).getTime());
                         break;
                     case ENUM_SERIESMODE.MODE_VOLUME:
-                        rates.push(current_rate.volume);
+                        rates.push(Number(current_rate.real_volume));
                         break;
                 }        
             }
         });
-        var lowest = Math.min(rates);
-        callback({status: 'success', lowest: lowest, function: 'iLowest'});
+        var lowest = rates[0];
+        rates.forEach(function(rate){
+            if (rate < lowest) {
+                lowest = rate;
+            }
+        })
+        if (seriesmode_type == ENUM_SERIESMODE.MODE_TIME) {
+            lowest = new Date(lowest).toISOString();
+        }
+        callback({status: 'success', lowest: lowest, Function: 'iLowest'});
     } else {
         callback({status: 'error', message: 'missing rates', function: 'iLowest'});
     }
@@ -1030,21 +1061,21 @@ function iLowest(symbol,timeframe,seriesmode_type,count,start_pos,callback){
  * Returns Open price value for the bar of specified symbol with timeframe and shift
 */ 
 function iOpen(symbol,timeframe,shift,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     iOpen(symbol,timeframe,shift,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
-        var open = current_rates[shift].open;
-        callback({status: 'success', open: open, function: 'iOpen'});
+    } else if (charts.rates.length > 0) {
+        var open = charts.rates[shift].open;
+        callback({status: 'success', open: Number(open), function: 'iOpen'});
     } else {
         callback({status: 'error', message: 'missing rates', function: 'iOpen'});
     }
@@ -1054,20 +1085,20 @@ function iOpen(symbol,timeframe,shift,callback){
  * Returns time value for the bar of specified symbol with timeframe and shift
 */ 
 function iTime(symbol,timeframe,shift,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     iTime(symbol,timeframe,shift,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
-        var time = current_rates[shift].time;
+    } else if (charts.rates.length > 0) {
+        var time = charts.rates[shift].time;
         callback({status: 'success', time: time, function: 'iTime'});
     } else {
         callback({status: 'error', message: 'missing rates', function: 'iTime'});
@@ -1078,20 +1109,20 @@ function iTime(symbol,timeframe,shift,callback){
  * Returns Tick Volume value for the bar of specified symbol with timeframe and shift
  */
 function iVolume(symbol,timeframe,shift,callback){
-    if (symbol != current_symbol || timeframe != current_timeframe) {
-        current_symbol = symbol;
-        current_timeframe = timeframe;
+    if (symbol != charts.symbol || timeframe != charts.timeframe) {
+        charts.setSymbol(symbol);
+        charts.setTimeframe(timeframe);
         RefreshRates(
             function(results){
                 if (results.status == 'success') {
                     iVolume(symbol,timeframe,shift,callback);
                 } else {
-                    callback(results);
+                    callback(results); // already in the format os {status: 'error', message: '', function: ''}
                 }
             }
         );
-    } else if (current_rates.length > 0) {
-        var volume = current_rates[shift].volume;
+    } else if (charts.rates.length > 0) {
+        var volume = charts.rates[shift].real_volume;
         callback({status: 'success', volume: volume, function: 'iVolume'});
     } else {
         callback({status: 'error', message: 'missing rates', function: 'iVolume'});
