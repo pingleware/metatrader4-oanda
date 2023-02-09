@@ -1,2 +1,4 @@
 /test
 /node_modules
+._*
+package-lock.json
