@@ -1,0 +1,15 @@
+{
+    "oanda": {
+        "test": {
+            "accounts": [],
+            "url": "",
+            "token": ""
+        },
+        "live": {
+            "accounts": [],
+            "url": "",
+            "token": ""
+        }
+    },
+    "debug": true
+}

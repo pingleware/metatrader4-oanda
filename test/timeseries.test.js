@@ -54,7 +54,7 @@ const settings = require('../settings.json');
 
 describe("Testing Time Series functions",function(){
     this.beforeAll(function(){
-        initialize(settings.oanda.url.test,settings.oanda.token.test,settings.oanda.accounts[0]);
+        initialize(settings.oanda.test.url,settings.oanda.test.token,settings.oanda.test.accounts[0]);
         charts.setSymbol('EUR_USD');
         charts.setTimeframe(ENUM_TIMEFRAMES.PERIOD_S5);
     })

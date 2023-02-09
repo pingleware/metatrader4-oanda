@@ -1,6 +1,6 @@
 {
   "name": "@pingleware/metatrader4-oanda",
-  "version": "1.0.3-alpha",
+  "version": "1.0.4-alpha",
   "description": "Metatrader 4 to OANDA v2.0 REST API proxy",
   "files": [
     "*.js",

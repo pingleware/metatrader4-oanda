@@ -111,7 +111,7 @@ const settings = require('../settings.json');
 
 describe('Testing Checkup Functions', function(){
     this.beforeAll(function(){
-        initialize(settings.oanda.url.test,settings.oanda.token.test,settings.oanda.accounts[0]);
+        initialize(settings.oanda.test.url,settings.oanda.test.token,settings.oanda.test.accounts[0]);
     })
 
     it('GetLastError', function(){
