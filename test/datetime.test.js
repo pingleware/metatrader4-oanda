@@ -30,121 +30,121 @@ const {
 const settings = require('../settings.json');
 
 describe("Testing Date and Time functions",function(){
-    it("MqlDateTime",function(){
+    it("MqlDateTime",async function(){
         if (settings.debug) console.log(MqlDateTime);
     })
-    it("TimeCurrent",function(){
-        var result = TimeCurrent();
+    it("TimeCurrent",async function(){
+        var result = await TimeCurrent();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("TimeLocal",function(){
-        var result = TimeLocal();
+    it("TimeLocal",async function(){
+        var result = await TimeLocal();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("TimeGMT",function(){
-        var result = TimeGMT();
+    it("TimeGMT",async function(){
+        var result = await TimeGMT();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("TimeDaylightSavings",function(){
-        var result = TimeDaylightSavings();
+    it("TimeDaylightSavings",async function(){
+        var result = await TimeDaylightSavings();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("TimeGMTOffset",function(){
-        var result = TimeGMTOffset();
+    it("TimeGMTOffset",async function(){
+        var result = await TimeGMTOffset();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("TimeToStruct",function(){
-        var result = TimeToStruct(new Date().getTime());
+    it("TimeToStruct",async function(){
+        var result = await TimeToStruct(new Date().getTime());
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("StructToTime",function(){
-        var result = StructToTime(MqlDateTime);
+    it("StructToTime",async function(){
+        var result = await StructToTime(MqlDateTime);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("Day",function(){
-        var result = Day();
+    it("Day",async function(){
+        var result = await Day();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("DayOfWeek",function(){
-        var result = DayOfWeek();
+    it("DayOfWeek",async function(){
+        var result = await DayOfWeek();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("DayOfYear",function(){
-        var result = DayOfYear();
+    it("DayOfYear",async function(){
+        var result = await DayOfYear();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("Hour",function(){
-        var result = Hour();
+    it("Hour",async function(){
+        var result = await Hour();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("Minute",function(){
-        var result = Minute();
+    it("Minute",async function(){
+        var result = await Minute();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("Month",function(){
-        var result = Month();
+    it("Month",async function(){
+        var result = await Month();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("Seconds",function(){
-        var result = Seconds();
+    it("Seconds",async function(){
+        var result = await Seconds();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("TimeDay",function(){
-        var result = TimeDay(new Date());
+    it("TimeDay",async function(){
+        var result = await TimeDay(new Date());
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("TimeDayOfWeek",function(){
-        var result = TimeDayOfWeek(new Date());
+    it("TimeDayOfWeek",async function(){
+        var result = await TimeDayOfWeek(new Date());
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("TimeDayOfYear",function(){
-        var result = TimeDayOfYear(new Date());
+    it("TimeDayOfYear",async function(){
+        var result = await TimeDayOfYear(new Date());
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("TimeHour",function(){
-        var result = TimeHour(new Date());
+    it("TimeHour",async function(){
+        var result = await TimeHour(new Date());
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("TimeMinute",function(){
-        var result = TimeMinute(new Date());
+    it("TimeMinute",async function(){
+        var result = await TimeMinute(new Date());
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("TimeMonth",function(){
-        var result = TimeMonth(new Date());
+    it("TimeMonth",async function(){
+        var result = await TimeMonth(new Date());
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("TimeSeconds",function(){
-        var result = TimeSeconds(new Date());
+    it("TimeSeconds",async function(){
+        var result = await TimeSeconds(new Date());
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("TimeYear",function(){
-        var result = TimeYear(new Date());
+    it("TimeYear",async function(){
+        var result = await TimeYear(new Date());
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it("Year",function(){
-        var result = Year();
+    it("Year",async function(){
+        var result = await Year();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })

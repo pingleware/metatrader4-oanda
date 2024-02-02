@@ -109,276 +109,256 @@ const {
 } = require('../index');
 const settings = require('../settings.json');
 
-describe('Testing Checkup Functions', function(){
+describe('Testing Checkup Functions', async function(){
     this.beforeAll(function(){
         initialize(settings.oanda.test.url,settings.oanda.test.token,settings.oanda.test.accounts[0]);
     })
 
-    it('GetLastError', function(){
-        var result = GetLastError();
+    it('GetLastError', async function(){
+        var result = await GetLastError();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('IsStopped', function(){
-        IsStopped(function(result){
-            if (settings.debug) console.log(result);
-            assert.equal(result.status,'error');
-        });
+    it('IsStopped', async function(){
+        var result = await IsStopped();
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'error');
     })
-    it('UninitializeReason', function(){
-        UninitializeReason(function(result){
-            if (settings.debug) console.log(result);
-            assert.equal(result.status,'error');
-        })
+    it('UninitializeReason', async function(){
+        var result = await UninitializeReason();
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'error');
     })
-    it('MQLInfoInteger', function(){
-        var result = MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_CODEPAGE);
+    it('MQLInfoInteger', async function(){
+        var result = await MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_CODEPAGE);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
-        result = MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_PROGRAM_TYPE);
+        result = await MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_PROGRAM_TYPE);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
-        result = MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_DLLS_ALLOWED);
+        result = await MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_DLLS_ALLOWED);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
-        result = MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_TRADE_ALLOWED);
+        result = await MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_TRADE_ALLOWED);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
-        result = MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_SIGNALS_ALLOWED);
+        result = await MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_SIGNALS_ALLOWED);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
-        result = MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_DEBUG);
+        result = await MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_DEBUG);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
-        result = MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_PROFILER);
+        result = await MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_PROFILER);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
-        result = MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_TESTER);
+        result = await MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_TESTER);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
-        result = MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_OPTIMIZATION);
+        result = await MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_OPTIMIZATION);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
-        result = MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_VISUAL_MODE);
+        result = await MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_VISUAL_MODE);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
-        result = MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_FRAME_MODE);
+        result = await MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_FRAME_MODE);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
-        result = MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_LICENSE_TYPE);
+        result = await MQLInfoInteger(ENUM_MQL_INFO_INTEGER.MQL_LICENSE_TYPE);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');    
     })
-    it('MQLInfoString', function(){
-        var result = MQLInfoString(ENUM_MQL_INFO_STRING.MQL_PROGRAM_NAME);
+    it('MQLInfoString', async function(){
+        var result = await MQLInfoString(ENUM_MQL_INFO_STRING.MQL_PROGRAM_NAME);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');    
-        result = MQLInfoString(ENUM_MQL_INFO_STRING.MQL_PROGRAM_PATH);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');    
-    })
-    it('MQLSetInteger', function(){
-        var result = MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_CODEPAGE,1308);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');    
-        result = MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_PROGRAM_TYPE,1);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');    
-        result = MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_DLLS_ALLOWED,1);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');    
-        result = MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_TRADE_ALLOWED,1);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');    
-        result = MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_SIGNALS_ALLOWED,1);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');    
-        result = MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_DEBUG,1);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');    
-        result = MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_PROFILER,1);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');    
-        result = MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_TESTER,1);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');    
-        result = MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_OPTIMIZATION,1);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');    
-        result = MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_VISUAL_MODE,1);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');    
-        result = MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_FRAME_MODE,1);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');    
-        result = MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_LICENSE_TYPE,1);
+        result = await MQLInfoString(ENUM_MQL_INFO_STRING.MQL_PROGRAM_PATH);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');    
     })
-    it('TerminalInfoInteger', function(){
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_BUILD,function(result){
+    it('MQLSetInteger', async function(){
+        var result = await MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_CODEPAGE,1308);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');    
+        result = await MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_PROGRAM_TYPE,1);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');    
+        result = await MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_DLLS_ALLOWED,1);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');    
+        result = await MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_TRADE_ALLOWED,1);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');    
+        result = await MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_SIGNALS_ALLOWED,1);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');    
+        result = await MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_DEBUG,1);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');    
+        result = await MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_PROFILER,1);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');    
+        result = await MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_TESTER,1);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');    
+        result = await MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_OPTIMIZATION,1);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');    
+        result = await MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_VISUAL_MODE,1);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');    
+        result = await MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_FRAME_MODE,1);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');    
+        result = await MQLSetInteger(ENUM_MQL_INFO_INTEGER.MQL_LICENSE_TYPE,1);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');    
+    })
+    it('TerminalInfoInteger', async function(){
+        var result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_BUILD);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_COMMUNITY_ACCOUNT,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_COMMUNITY_ACCOUNT);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_COMMUNITY_CONNECTION,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_COMMUNITY_CONNECTION);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_CONNECTED,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_CONNECTED);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_DLLS_ALLOWED,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_DLLS_ALLOWED);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_TRADE_ALLOWED,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_TRADE_ALLOWED);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_EMAIL_ENABLED,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_EMAIL_ENABLED);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_FTP_ENABLED,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_FTP_ENABLED);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_NOTIFICATIONS_ENABLED,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_NOTIFICATIONS_ENABLED);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_MAXBARS,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_MAXBARS);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_MQID,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_MQID);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_CODEPAGE,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_CODEPAGE);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_DISK_SPACE, function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_DISK_SPACE);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_CPU_CORES, function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_CPU_CORES);
             if (settings.debug) console.log(result);
-            //assert.equal(result.status,'error');  
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_MEMORY_PHYSICAL,function(result){
+            assert.equal(result.cpu_cores,8);  
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_MEMORY_PHYSICAL);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_MEMORY_AVAILABLE,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_MEMORY_AVAILABLE);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_MEMORY_USED,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_MEMORY_USED);
             if (settings.debug) console.log(result);
-        })
-        TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_SCREEN_DPI,function(result){
+        result = await TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER.TERMINAL_SCREEN_DPI);
             if (settings.debug) console.log(result);
-        })
     })
-    it('TerminalInfoDouble', function(){
-        var result = TerminalInfoDouble(ENUM_MQL_INFO_DOUBLE.TERMINAL_COMMUNITY_BALANCE);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');
-    })
-    it('TerminalInfoString', function(){
-        var result = TerminalInfoString(ENUM_TERMINAL_INFO_STRING.TERMINAL_LANGUAGE);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');
-        result = TerminalInfoString(ENUM_TERMINAL_INFO_STRING.TERMINAL_COMPANY);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');
-        result = TerminalInfoString(ENUM_TERMINAL_INFO_STRING.TERMINAL_NAME);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');
-        result = TerminalInfoString(ENUM_TERMINAL_INFO_STRING.TERMINAL_PATH);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');
-        result = TerminalInfoString(ENUM_TERMINAL_INFO_STRING.TERMINAL_DATA_PATH);
-        if (settings.debug) console.log(result);
-        assert.equal(result.status,'success');
-        result = TerminalInfoString(ENUM_TERMINAL_INFO_STRING.TERMINAL_COMMONDATA_PATH);
+    it('TerminalInfoDouble', async function(){
+        var result = await TerminalInfoDouble(ENUM_MQL_INFO_DOUBLE.TERMINAL_COMMUNITY_BALANCE);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('Symbol', function(){
-        var result = Symbol();
+    it('TerminalInfoString', async function(){
+        var result = await TerminalInfoString(ENUM_TERMINAL_INFO_STRING.TERMINAL_LANGUAGE);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');
+        result = await TerminalInfoString(ENUM_TERMINAL_INFO_STRING.TERMINAL_COMPANY);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');
+        result = await TerminalInfoString(ENUM_TERMINAL_INFO_STRING.TERMINAL_NAME);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');
+        result = await TerminalInfoString(ENUM_TERMINAL_INFO_STRING.TERMINAL_PATH);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');
+        result = await TerminalInfoString(ENUM_TERMINAL_INFO_STRING.TERMINAL_DATA_PATH);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');
+        result = await TerminalInfoString(ENUM_TERMINAL_INFO_STRING.TERMINAL_COMMONDATA_PATH);
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('Period', function(){
-        var result = Period();
+    it('Symbol', async function(){
+        var result = await Symbol();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('Digits', function(){
-        var result = Digits();
+    it('Period', async function(){
+        var result = await Period();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('Point', function(){
-        var result = Point();
+    it('Digits', async function(){
+        var result = await Digits();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('IsConnected', function(){
-        var result = IsConnected();
+    it('Point', async function(){
+        var result = await Point();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('IsDemo', function(){
-        var result = IsDemo();
+    it('IsConnected', async function(){
+        var result = await IsConnected();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('IsDllsAllowed', function(){
-        var result = IsDllsAllowed();
+    it('IsDemo', async function(){
+        var result = await IsDemo();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('IsExpertEnabled', function(){
-        var result = IsExpertEnabled();
+    it('IsDllsAllowed', async function(){
+        var result = await IsDllsAllowed();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('IsLibrariesAllowed', function(){
-        var result = IsLibrariesAllowed();
+    it('IsExpertEnabled', async function(){
+        var result = await IsExpertEnabled();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('IsOptimization', function(){
-        var result = IsOptimization();
+    it('IsLibrariesAllowed', async function(){
+        var result = await IsLibrariesAllowed();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('IsTesting', function(){
-        var result = IsTesting();
+    it('IsOptimization', async function(){
+        var result = await IsOptimization();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('IsTradeAllowed', function(){
-        var result = IsTradeAllowed();
+    it('IsTesting', async function(){
+        var result = await IsTesting();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('IsTradeContextBusy', function(){
-        var result = IsTradeContextBusy();
+    it('IsTradeAllowed', async function(){
+        var result = await IsTradeAllowed();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('IsVisualMode', function(){
-        var result = IsVisualMode();
+    it('IsTradeContextBusy', async function(){
+        var result = await IsTradeContextBusy();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('TerminalCompany', function(){
-        var result = TerminalCompany();
+    it('IsVisualMode', async function(){
+        var result = await IsVisualMode();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('TerminalName', function(){
-        var result = TerminalName()
+    it('TerminalCompany', async function(){
+        var result = await TerminalCompany();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
-    it('TerminalPath', function(){
-        var result = TerminalPath();
+    it('TerminalName', async function(){
+        var result = await TerminalName()
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');
+    })
+    it('TerminalPath', async function(){
+        var result = await TerminalPath();
         if (settings.debug) console.log(result);
         assert.equal(result.status,'success');
     })
