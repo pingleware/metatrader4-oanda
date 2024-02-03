@@ -1,0 +1,17 @@
+{
+    "oanda": {
+        "test": {
+            "accounts": [
+                "999-999-00000000-001"
+            ],
+            "url": "https://api-fxpractice.oanda.com",
+            "token": "OBTAIN_FROM_HUB.OANDA.COM"
+        },
+        "live": {
+            "accounts": [],
+            "url": "https://api.oanda.com",
+            "token": "OBTAIN_FROM_HUB.OANDA.COM"
+        }
+    },
+    "debug": false
+}

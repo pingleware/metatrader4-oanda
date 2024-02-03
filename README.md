@@ -1,21 +1,47 @@
 # PINGLEWARE Metatrader API Proxy for OANDA v2.0 REST API
+
 API algorithmin trading is independent of the operating system and trading platform. The OANDA REST API has functionality not available to metatrader expert advisors like a Market-If-Touch order which is an extensive pending order, and API trading permits the inclusion of trailing stop.
 
 This module provides provides matching functionality of the metatrader functions to the OANDA REST API.
 
 # Using MQL5.COM private signals
+
 If your trading account is associated with MetaTrader, then you can create a private signal to monitor and obtain live statistics and performance metrics of your API algorithmic trading, but keep in mond that API trading is marked as 'Placed manually' whereas a metatrader EA is marked as 'Placed by expert'. If only API trades are placed on the account, the Algo Trading metric will show 0% because metatrader is reporting those trades as manual trades. Best to keep the signal private with the above notation reminder in the description.
 
 # Installation
 
     npm i @pingleware/metatrader4-oanda
 
+then copy settings-production.json to settings.json and edit the file with your account numbers and tokens,
+
+```
+{
+    "oanda": {
+        "test": {
+            "accounts": [
+                "999-999-00000000-001"
+            ],
+            "url": "https://api-fxpractice.oanda.com",
+            "token": "OBTAIN_FROM_HUB.OANDA.COM"
+        },
+        "live": {
+            "accounts": [
+		"999-999-00000000-001"
+	    ],
+            "url": "https://api.oanda.com",
+            "token": "OBTAIN_FROM_HUB.OANDA.COM"
+        }
+    },
+    "debug": false
+}
+```
+
 # Usage
 
     "use strict"
 
     const {
-        initialize, 
+        initialize,
         AccountNumber
     } = require("@pingleware/metatrader4-oanda");
 
@@ -47,6 +73,7 @@ where,
     callback is the callback function to return the trade information
 
 ## iCustom function
+
 The iCustom function is provided to invoke standalone executable indicator files, which take the command line arguments,
 
     program_name symbol timeframe [optional indicator arguments]
@@ -54,6 +81,7 @@ The iCustom function is provided to invoke standalone executable indicator files
 the indicator code should output the results to the console for the return to capture the console and send back to the caller.
 
 # Supported Metatrader Functions
+
 The following functions are supported and use callbacks for asynchronous communication,
 
 ## Initialization Functions
@@ -228,7 +256,7 @@ The following functions are supported and use callbacks for asynchronous communi
     TimeMonth,
     TimeSeconds,
     TimeYear,
-    Year 
+    Year
 
 ## Technical Indicators
 
@@ -347,11 +375,9 @@ The following functions are supported and use callbacks for asynchronous communi
     GetCommunitySentimentByCountry,
     GetDataDaily
 
-
-
 # Release Schedule
 
-        Date        Version
+    Date        Version
     ??/??/2022       1.0.0          Production release
 
 ## Release Tags
@@ -363,6 +389,7 @@ The following functions are supported and use callbacks for asynchronous communi
     production = (without any version suffix), ready for live trading
 
 # End-of-Life Doctrine
+
 When a piece of software is useful, there should never be an EOL doctrine. The intention for this application is to achieve immoratlity ;).
 At some point of time in the future, this project may appear to be dead and abandon. The opposite will be true!
 When this project reaches that stage, this project has matured to a level where maintenance is minimal (mostly updating to latest version of Node).
