@@ -52,341 +52,264 @@ const {
 } = require('../index');
 const settings = require('../settings.json');
 
-describe("Testing Time Series functions",function(){
+describe("Testing Time Series functions",async function(){
     this.beforeAll(function(){
         initialize(settings.oanda.test.url,settings.oanda.test.token,settings.oanda.test.accounts[0]);
-        charts.setSymbol('EUR_USD');
-        charts.setTimeframe(ENUM_TIMEFRAMES.PERIOD_S5);
+        charts.symbol = 'EUR_USD';
+        charts.timeframe = ENUM_TIMEFRAMES.PERIOD_S5;
     })
 
-    it("SeriesInfoInteger",function(){
-        RefreshRates(function(result){
-            SeriesInfoInteger('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIES_INFO_INTEGER.SERIES_BARS_COUNT,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })    
-            SeriesInfoInteger('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIES_INFO_INTEGER.SERIES_FIRSTDATE,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })    
-            SeriesInfoInteger('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIES_INFO_INTEGER.SERIES_LASTBAR_DATE,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })    
-            SeriesInfoInteger('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIES_INFO_INTEGER.SERIES_SERVER_FIRSTDATE,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })    
-        });
+    it("RefreshRates",async function(){
+        const result = await RefreshRates();
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');    
     })
-    it("RefreshRates",function(){
-        RefreshRates(function(result){
-            if (settings.debug) console.log(result);
-            assert.equal(result.status,'success');
-        })
+    it("SeriesInfoInteger (SERIES_BARS_COUNT)",async function(){
+        const result = await SeriesInfoInteger('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIES_INFO_INTEGER.SERIES_BARS_COUNT);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');
     })
-    it("CopyRatesFromStart",function(){
-        RefreshRates(function(result){
-            CopyRatesFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,30,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })
-        });
+    it("SeriesInfoInteger (SERIES_FIRSTDATE)",async function(){
+        const result = await SeriesInfoInteger('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIES_INFO_INTEGER.SERIES_FIRSTDATE);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');
     })
-    it("CopyRatesFromDate",function(){
-        RefreshRates(function(result){
-            CopyRatesFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })
-        });
+    it("SeriesInfoInteger (SERIES_LASTBAR_DATE)",async function(){
+        const result = await SeriesInfoInteger('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIES_INFO_INTEGER.SERIES_LASTBAR_DATE);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');
     })
-    it("CopyRatesBetween",function(){
-        RefreshRates(function(result){
-            CopyRatesBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-01-01','2021-12-31',function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })
-        })
+    it("SeriesInfoInteger (SERIES_SERVER_FIRSTDATE)",async function(){
+        const result = await SeriesInfoInteger('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIES_INFO_INTEGER.SERIES_SERVER_FIRSTDATE);
+        if (settings.debug) console.log(result);
+        assert.equal(result.status,'success');
     })
-    it("CopyTimeFromStart",function(){
-        RefreshRates(function(result){
-            CopyTimeFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,5,function(result){
+    it("CopyRatesFromStart",async function(){
+        const result = await RefreshRates();
+            CopyRatesFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,30);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyTimeFromDate",function(){
-        RefreshRates(function(result){
-            CopyTimeFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10,function(result){
+    it("CopyRatesFromDate",async function(){
+        const result = await RefreshRates();
+            CopyRatesFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyTimeBetween",function(){
-        RefreshRates(function(result){
-            CopyTimeBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01','2021-11-01',function(result){
+    it("CopyRatesBetween",async function(){
+        const result = await RefreshRates();
+            CopyRatesBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-01-01','2021-12-31');
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyOpenFromStart",function(){
-        RefreshRates(function(result){
-            CopyOpenFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,5,function(result){
+    it("CopyTimeFromStart",async function(){
+        const result = await RefreshRates();
+            CopyTimeFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,5);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyOpenFromDate",function(){
-        RefreshRates(function(result){
-            CopyOpenFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10,function(result){
+    it("CopyTimeFromDate",async function(){
+        const result = await RefreshRates();
+            CopyTimeFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyOpenBetween",function(){
-        RefreshRates(function(result){
-            CopyOpenBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01','2021-11-01',function(result){
+    it("CopyTimeBetween",async function(){
+        const result = await RefreshRates();
+            CopyTimeBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01','2021-11-01');
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyHighFromStart",function(){
-        RefreshRates(function(result){
-            CopyHighFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,5,function(result){
+    it("CopyOpenFromStart",async function(){
+        const result = await RefreshRates();
+            CopyOpenFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,5);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyHighFromDate",function(){
-        RefreshRates(function(result){
-            CopyHighFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10,function(result){
+    it("CopyOpenFromDate",async function(){
+        const result = await RefreshRates();
+            CopyOpenFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyHighBetween",function(){
-        RefreshRates(function(result){
-            CopyHighBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01','2021-11-01',function(result){
+    it("CopyOpenBetween",async function(){
+        const result = await RefreshRates();
+            CopyOpenBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01','2021-11-01');
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyLowFromStart",function(){
-        RefreshRates(function(result){
-            CopyLowFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,5,function(result){
+    it("CopyHighFromStart",async function(){
+        const result = await RefreshRates();
+            CopyHighFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,5);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyLowFromDate",function(){
-        RefreshRates(function(result){
-            CopyLowFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10,function(result){
+    it("CopyHighFromDate",async function(){
+        const result = await RefreshRates();
+            CopyHighFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyLowBetween",function(){
-        RefreshRates(function(result){
-            CopyLowBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01','2021-11-01',function(result){
+    it("CopyHighBetween",async function(){
+        const result = await RefreshRates();
+            CopyHighBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01','2021-11-01');
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyCloseFromStart",function(){
-        RefreshRates(function(result){
-            CopyCloseFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,5,function(result){
+    it("CopyLowFromStart",async function(){
+        const result = await RefreshRates();
+            CopyLowFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,5);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyCloseFromDate",function(){
-        RefreshRates(function(result){
-            CopyCloseFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10,function(result){
+    it("CopyLowFromDate",async function(){
+        const result = await RefreshRates();
+            CopyLowFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyCloseBetween",function(){
-        RefreshRates(function(result){
-            CopyCloseBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01','2021-11-01',function(result){
+    it("CopyLowBetween",async function(){
+        const result = await RefreshRates();
+            CopyLowBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01','2021-11-01');
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyTickVolumeFromStart",function(){
-        RefreshRates(function(result){
-            CopyTickVolumeFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,5,function(result){
+    it("CopyCloseFromStart",async function(){
+        const result = await RefreshRates();
+            CopyCloseFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,5);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyTickVolumeFromDate",function(){
-        RefreshRates(function(result){
-            CopyTickVolumeFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10,function(result){
+    it("CopyCloseFromDate",async function(){
+        const result = await RefreshRates();
+            CopyCloseFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("CopyTickVolumeBetween",function(){
-        RefreshRates(function(result){
-            CopyTickVolumeBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01','2021-11-01',function(result){
+    it("CopyCloseBetween",async function(){
+        const result = await RefreshRates();
+            CopyCloseBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01','2021-11-01');
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("Bars",function(){
-        RefreshRates(function(result){
-            iBars('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,function(result){
+    it("CopyTickVolumeFromStart",async function(){
+        const result = await RefreshRates();
+            CopyTickVolumeFromStart('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,10,5);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("BarsBetween",function(){
-        RefreshRates(function(result){
-            BarsBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-01-01','2022-12-31',function(result){
+    it("CopyTickVolumeFromDate",async function(){
+        const result = await RefreshRates();
+            CopyTickVolumeFromDate('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2021-02-01',10);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("iBars",function(){
-        RefreshRates(function(result){
-            iBars('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,function(result){
+    it("CopyTickVolumeBetween",async function(){
+        const result = await RefreshRates();
+            CopyTickVolumeBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01','2021-11-01');
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("iBarShift",function(){
-        RefreshRates(function(result){
-            iBarShift('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01',false,function(result){
+    it("Bars",async function(){
+        const result = await RefreshRates();
+            iBars('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("iClose",function(){
-        RefreshRates(function(result){
-            iClose('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,0,function(result){
+    it("BarsBetween",async function(){
+        const result = await RefreshRates();
+            BarsBetween('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-01-01','2022-12-31');
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("iHigh",function(){
-        RefreshRates(function(result){
-            iHigh('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,0,function(result){
+    it("iBars",async function(){
+        const result = await RefreshRates();
+            iBars('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("iHighest",function(){
-        RefreshRates(function(result){
-            iHighest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_CLOSE,10,0,function(result){
+    it("iBarShift",async function(){
+        const result = await RefreshRates();
+            iBarShift('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,'2022-10-01',false);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-            iHighest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_HIGH,10,0,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })
-            iHighest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_LOW,10,0,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })
-            iHighest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_OPEN,10,0,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })
-            iHighest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_TIME,10,0,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })
-            iHighest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_VOLUME,10,0,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })
-        })
     })
-    it("iLow",function(){
-        RefreshRates(function(result){
-            iLow('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,0,function(result){
+    it("iClose",async function(){
+        const result = await RefreshRates();
+            iClose('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,0);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("iLowest",function(){
-        RefreshRates(function(result){
-            iLowest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_CLOSE,10,0,function(result){
+    it("iHigh",async function(){
+        const result = await RefreshRates();
+            iHigh('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,0);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-            iLowest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_HIGH,10,0,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })
-            iLowest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_LOW,10,0,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })
-            iLowest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_OPEN,10,0,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })
-            iLowest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_TIME,10,0,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })
-            iLowest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_VOLUME,10,0,function(result){
-                if (settings.debug) console.log(result);
-                assert.equal(result.status,'success');
-            })
-        })
     })
-    it("iOpen",function(){
-        RefreshRates(function(result){
-            iOpen('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,0,function(result){
+    it("iHighest",async function(){
+        const result = await RefreshRates();
+            iHighest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_CLOSE,10,0);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
+            iHighest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_HIGH,10,0);
+                if (settings.debug) console.log(result);
+                assert.equal(result.status,'success');
+            iHighest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_LOW,10,0);
+                if (settings.debug) console.log(result);
+                assert.equal(result.status,'success');
+            iHighest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_OPEN,10,0);
+                if (settings.debug) console.log(result);
+                assert.equal(result.status,'success');
+            iHighest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_TIME,10,0);
+                if (settings.debug) console.log(result);
+                assert.equal(result.status,'success');
+            iHighest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_VOLUME,10,0);
+                if (settings.debug) console.log(result);
+                assert.equal(result.status,'success');
     })
-    it("iTime",function(){
-        RefreshRates(function(result){
-            iTime('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,0,function(result){
+    it("iLow",async function(){
+        const result = await RefreshRates();
+            iLow('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,0);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
     })
-    it("iVolume",function(){
-        RefreshRates(function(result){
-            iVolume('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,0,function(result){
+    it("iLowest",async function(){
+        const result = await RefreshRates();
+            iLowest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_CLOSE,10,0);
                 if (settings.debug) console.log(result);
                 assert.equal(result.status,'success');
-            })
-        })
+            iLowest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_HIGH,10,0);
+                if (settings.debug) console.log(result);
+                assert.equal(result.status,'success');
+            iLowest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_LOW,10,0);
+                if (settings.debug) console.log(result);
+                assert.equal(result.status,'success');
+            iLowest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_OPEN,10,0);
+                if (settings.debug) console.log(result);
+                assert.equal(result.status,'success');
+            iLowest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_TIME,10,0);
+                if (settings.debug) console.log(result);
+                assert.equal(result.status,'success');
+            iLowest('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,ENUM_SERIESMODE.MODE_VOLUME,10,0);
+                if (settings.debug) console.log(result);
+                assert.equal(result.status,'success');
+    })
+    it("iOpen",async function(){
+        const result = await RefreshRates();
+            iOpen('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,0);
+                if (settings.debug) console.log(result);
+                assert.equal(result.status,'success');
+    })
+    it("iTime",async function(){
+        const result = await RefreshRates();
+            iTime('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,0);
+                if (settings.debug) console.log(result);
+                assert.equal(result.status,'success');
+    })
+    it("iVolume",async function(){
+        const result = await RefreshRates();
+            iVolume('EUR_USD',ENUM_TIMEFRAMES.PERIOD_S5,0);
+                if (settings.debug) console.log(result);
+                assert.equal(result.status,'success');
     })
 })
