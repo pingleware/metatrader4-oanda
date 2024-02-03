@@ -6,8 +6,7 @@ function GetRequest(url, callback) {
   var options = {
     'method': 'GET',
     'url': url,
-    'headers': {
-    }
+    'headers': context.headers
   };
   request(options, function (error, response) {
     if (error) throw new Error(error);
@@ -15,12 +14,12 @@ function GetRequest(url, callback) {
   });  
 }
 
-function GetRequestSync(url) {
+function GetRequestSync(context,path) {
   return new Promise((resolve, reject) => {
     var options = {
       'method': 'GET',
-      'url': url,
-      'headers': {}
+      'url': "https://" + context.hostname + "/" + path,
+      'headers': context.headers
     };
     request(options, function (error, response) {
       if (error) reject(error);
@@ -32,7 +31,7 @@ function GetRequestSync(url) {
 function SendRequest(context, path, method, body, callback) {
     var options = {
       'method': method,  
-      'url': "https://" + context.hostname + "/" + path,    
+      'url': context.hostname + "/" + path,    
       'headers': context.headers,
       'body': body
     };

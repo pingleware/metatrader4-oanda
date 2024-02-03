@@ -1,8 +1,5 @@
 "use strict"
 
-const config = require('./package.json');
-const {Context} = require('@oanda/v20/context');
-
 const RUNTIME_ERROR = {
     ERR_NO_ERROR: 0, // No error returned
     ERR_NO_RESULT: 1,     // No error returned, but the result is unknown
@@ -242,18 +239,31 @@ var systime = {
 
 var account = {
     number: '',
-    context: null,
+    host: '',
+    token: '',
+    headers: null,
+    context: null
 };
 
+
 function setAccountContext(hostname,token,account_number) {
-    account.context =  new Context(hostname,443,true,config.name);
-    account.context.setToken(token);
+    account.hostname =  hostname;
+    account.token = token;
     account.number = account_number;
+    account.headers = {'Authorization': `Bearer ${token}`};
+    account.context = {
+        hostname: hostname,
+        token: token,
+        number: account_number,
+        headers: {'Authorization': `Bearer ${token}`}    
+    }
 }
 
 function getAccountContext() {
     return account.context;
 }
+
+
 
 var ftpClient = {
     host: 'domain.com', // required
@@ -273,7 +283,7 @@ var ftpClient = {
     cwd: '', // Optional, defaults to the directory from where the script is executed
     additionalLftpCommands: '', // Additional commands to pass to lftp, splitted by ';'
     requireSSHKey:  true, //  Optional, defaults to false, This option for SFTP Protocol with ssh key authentication
-    sshKeyPath: '/home1/phrasee/id_dsa', // Required if requireSSHKey: true , defaults to empty string, This option for SFTP Protocol with ssh key authentication
+    sshKeyPath: '/tmp/id_dsa', // Required if requireSSHKey: true , defaults to empty string, This option for SFTP Protocol with ssh key authentication
     sshKeyOptions: '', // ssh key options such as 'StrictHostKeyChecking=no'
     set: function(options) {
         this.host = options.host;
@@ -320,6 +330,14 @@ var sendgrid = {
     }
 }
 
+var charts = {
+    symbol: '',
+    period: 0,
+    digits: 0,
+    point: 0,
+    timeframe: 0
+}
+
 module.exports = {
     RUNTIME_ERROR,
     getAccountContext,
@@ -330,5 +348,6 @@ module.exports = {
     account,
     ftpClient,
     twilio,
-    sendgrid
+    sendgrid,
+    charts
 };
